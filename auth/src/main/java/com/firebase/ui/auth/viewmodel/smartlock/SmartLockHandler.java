@@ -2,9 +2,6 @@ package com.firebase.ui.auth.viewmodel.smartlock;
 
 import android.app.Activity;
 import android.app.Application;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.firebase.ui.auth.ErrorCodes;
@@ -23,6 +20,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import androidx.annotation.*;
 
 /**
  * ViewModel for initiating saves to the Credentials API (SmartLock).

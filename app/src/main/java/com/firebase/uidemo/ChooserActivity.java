@@ -16,11 +16,11 @@ package com.firebase.uidemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +30,6 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.util.ExtraConstants;
 import com.firebase.uidemo.auth.AnonymousUpgradeActivity;
 import com.firebase.uidemo.auth.AuthUiActivity;
-import com.firebase.uidemo.database.firestore.FirestoreChatActivity;
-import com.firebase.uidemo.database.firestore.FirestorePagingActivity;
-import com.firebase.uidemo.database.realtime.FirebaseDbPagingActivity;
-import com.firebase.uidemo.database.realtime.RealtimeDbChatActivity;
-import com.firebase.uidemo.storage.ImageActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,33 +63,17 @@ public class ChooserActivity extends AppCompatActivity {
             extends RecyclerView.Adapter<ActivityStarterHolder> {
         private static final Class[] CLASSES = new Class[]{
                 AuthUiActivity.class,
-                AnonymousUpgradeActivity.class,
-                FirestoreChatActivity.class,
-                FirestorePagingActivity.class,
-                RealtimeDbChatActivity.class,
-                FirebaseDbPagingActivity.class,
-                ImageActivity.class,
+                AnonymousUpgradeActivity.class
         };
 
         private static final int[] DESCRIPTION_NAMES = new int[]{
                 R.string.title_auth_activity,
-                R.string.title_anonymous_upgrade,
-                R.string.title_firestore_activity,
-                R.string.title_firestore_paging_activity,
-                R.string.title_realtime_database_activity,
-                R.string.title_realtime_database_paging_activity,
-                R.string.title_storage_activity
+                R.string.title_anonymous_upgrade
         };
 
         private static final int[] DESCRIPTION_IDS = new int[]{
                 R.string.desc_auth,
-                R.string.desc_anonymous_upgrade,
-                R.string.desc_firestore,
-                R.string.desc_firestore_paging,
-                R.string.desc_realtime_database,
-                R.string.desc_realtime_database_paging,
-                R.string.desc_storage
-        };
+                R.string.desc_anonymous_upgrade};
 
         @Override
         public ActivityStarterHolder onCreateViewHolder(ViewGroup parent, int viewType) {

@@ -15,4 +15,6 @@
     <dimen name="fui_button_inset_right">2dp</dimen>
 
     <dimen name="fui_min_height_target">48dp</dimen>
+    <dimen name="fui_edit_text_font_size">14sp</dimen>
+    <dimen name="border_dimen">1dp</dimen>
 </resources>

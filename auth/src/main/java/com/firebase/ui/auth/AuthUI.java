@@ -19,13 +19,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.CallSuper;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
-import android.support.annotation.StringDef;
-import android.support.annotation.StyleRes;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -80,6 +73,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import androidx.annotation.*;
 
 /**
  * The entry point to the AuthUI authentication flow, and related utility methods. If your
@@ -1127,9 +1122,18 @@ public final class AuthUI {
     private abstract class AuthIntentBuilder<T extends AuthIntentBuilder> {
         final List<IdpConfig> mProviders = new ArrayList<>();
         int mLogo = NO_LOGO;
+
+        int mForgotPassword;
+        int mEmail;
+        int mPassword;
+        int mDisplayName;
+
         int mTheme = getDefaultTheme();
+
+
         String mTosUrl;
         String mPrivacyPolicyUrl;
+
         boolean mAlwaysShowProviderChoice = false;
         boolean mEnableCredentials = true;
         boolean mEnableHints = true;
@@ -1155,6 +1159,30 @@ public final class AuthUI {
         @NonNull
         public T setLogo(@DrawableRes int logo) {
             mLogo = logo;
+            return (T) this;
+        }
+
+        @NonNull
+        public T setForgotPassword(@IdRes int forgotPassword) {
+            mForgotPassword = forgotPassword;
+            return (T) this;
+        }
+
+        @NonNull
+        public T setEmail(@IdRes int email) {
+            mEmail = email;
+            return (T) this;
+        }
+
+        @NonNull
+        public T setPassword(@IdRes int password) {
+            mPassword = password;
+            return (T) this;
+        }
+
+        @NonNull
+        public T setDisplayName(@IdRes int displayName) {
+            mDisplayName = displayName;
             return (T) this;
         }
 

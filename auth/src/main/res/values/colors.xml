@@ -16,4 +16,9 @@
     <color name="fui_bgPhone">#43C5A5</color>
     <color name="fui_bgAnonymous">#f4b400</color>
     <color name="fui_buttonShadow">#64BEBEBE</color>
+    <color name="fui_border_color">#6f6f6f</color>
+    <color name="fui_edit_text_color">#222222</color>
+    <color name="fui_edit_hint_text_color">#A0222222</color>
+    <color name="fui_error">#FFF02364</color>
+    <color name="border_color">#6f6f6f</color>
 </resources>

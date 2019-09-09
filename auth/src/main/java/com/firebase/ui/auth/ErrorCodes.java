@@ -1,11 +1,10 @@
 package com.firebase.ui.auth;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.RestrictTo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.*;
 
 /**
  * Error codes for failed sign-in attempts.

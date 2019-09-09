@@ -1,11 +1,11 @@
 package com.firebase.ui.auth.util.ui;
 
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.annotation.RestrictTo;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
+
+import androidx.annotation.*;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class TextHelper {

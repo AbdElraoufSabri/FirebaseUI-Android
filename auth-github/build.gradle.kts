@@ -6,11 +6,11 @@ android {
 
 dependencies {
     compileOnly(project(":auth")) { isTransitive = false }
-    compileOnly(Config.Libs.Firebase.auth) { isTransitive = false }
+    compileOnly(Libs.firebase_auth) { isTransitive = false }
 
-    implementation(Config.Libs.Support.appCompat)
-    implementation(Config.Libs.Support.customTabs)
+    implementation(Libs.appcompat)
+    implementation(Libs.browser)
 
-    implementation(Config.Libs.Misc.retrofit)
-    implementation(Config.Libs.Misc.retrofitGson)
+    implementation(Libs.retrofit)
+    implementation(Libs.converter_gson)
 }

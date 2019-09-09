@@ -3,8 +3,6 @@ package com.firebase.ui.auth.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
@@ -13,11 +11,9 @@ import android.widget.FrameLayout;
 
 import com.firebase.ui.auth.R;
 
+import androidx.annotation.*;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
-/**
- * Base classes for activities that are just simple overlays.
- */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class InvisibleActivityBase extends HelperActivityBase {
 

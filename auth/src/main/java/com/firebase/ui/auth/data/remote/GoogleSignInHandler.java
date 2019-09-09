@@ -2,9 +2,6 @@ package com.firebase.ui.auth.data.remote;
 
 import android.app.Application;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -27,6 +24,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import androidx.annotation.*;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class GoogleSignInHandler extends ProviderSignInBase<GoogleSignInHandler.Params> {

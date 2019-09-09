@@ -1,7 +1,7 @@
 package com.firebase.uidemo;
 
-import android.support.multidex.MultiDexApplication;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.multidex.MultiDexApplication;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.squareup.leakcanary.LeakCanary;
 

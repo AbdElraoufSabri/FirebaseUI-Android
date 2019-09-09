@@ -1,13 +1,6 @@
 import com.android.build.gradle.internal.dsl.TestOptions
 
 android {
-    buildTypes {
-        named("release").configure {
-            postprocessing {
-                consumerProguardFiles("auth-proguard.pro")
-            }
-        }
-    }
 
     lintOptions {
         disable("UnusedQuantity")
@@ -23,28 +16,28 @@ android {
 }
 
 dependencies {
-    implementation(Config.Libs.Support.design)
-    implementation(Config.Libs.Support.customTabs)
-    implementation(Config.Libs.Support.constraint)
-    implementation(Config.Libs.Misc.materialProgress)
+    implementation(Libs.material)
+    implementation(Libs.browser)
+    implementation(Libs.constraintlayout)
+    implementation(Libs.annotation)
+    implementation(Libs.appcompat)
+    implementation(Libs.library)
 
-    implementation(Config.Libs.Arch.extensions)
-    annotationProcessor(Config.Libs.Arch.compiler)
+    implementation(Libs.lifecycle_extensions)
+    annotationProcessor(Libs.lifecycle_compiler)
 
-    api(Config.Libs.Firebase.auth)
-    api(Config.Libs.PlayServices.auth)
+    api(Libs.firebase_auth)
+    api(Libs.play_services_auth)
 
-    compileOnly(Config.Libs.Provider.facebook)
-    implementation(Config.Libs.Support.v4) // Needed to override deps
-    implementation(Config.Libs.Support.cardView) // Needed to override Facebook
-    compileOnly(Config.Libs.Provider.twitter) { isTransitive = true }
+    compileOnly(Libs.facebook_login)
+    implementation(Libs.cardview) // Needed to override Facebook
+    compileOnly(Libs.twitter_core) { isTransitive = true }
 
-    testImplementation(Config.Libs.Test.junit)
-    testImplementation(Config.Libs.Test.truth)
-    testImplementation(Config.Libs.Test.mockito)
-    testImplementation(Config.Libs.Test.robolectric)
-    testImplementation(Config.Libs.Provider.facebook)
-    testImplementation(Config.Libs.Provider.twitter) { isTransitive = true }
+    testImplementation(Libs.junit)
+    testImplementation(Libs.truth)
+    testImplementation(Libs.mockito_android)
+    testImplementation(Libs.robolectric)
+    testImplementation(Libs.facebook_login)
+    testImplementation(Libs.twitter_core) { isTransitive = true }
 
-    debugImplementation(project(":internal:lintchecks"))
 }

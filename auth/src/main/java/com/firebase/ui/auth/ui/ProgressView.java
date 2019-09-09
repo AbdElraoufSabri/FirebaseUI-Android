@@ -1,7 +1,7 @@
 package com.firebase.ui.auth.ui;
 
-import android.support.annotation.RestrictTo;
-import android.support.annotation.StringRes;
+
+import androidx.annotation.*;
 
 /**
  * View (Activity or Fragment, normally) that can respond to progress events.

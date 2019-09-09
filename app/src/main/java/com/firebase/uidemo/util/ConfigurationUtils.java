@@ -2,7 +2,7 @@ package com.firebase.uidemo.util;
 
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.uidemo.R;
