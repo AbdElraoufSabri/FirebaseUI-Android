@@ -25,7 +25,6 @@ import android.util.Log;
 import com.facebook.login.LoginManager;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.remote.TwitterSignInHandler;
-import com.firebase.ui.auth.ui.idp.AuthMethodPickerActivity;
 import com.firebase.ui.auth.util.CredentialUtils;
 import com.firebase.ui.auth.util.ExtraConstants;
 import com.firebase.ui.auth.util.GoogleApiUtils;
@@ -93,18 +92,6 @@ public final class AuthUI {
     public static final String TAG = "AuthUI";
 
     /**
-     * Provider for anonymous users.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public static final String ANONYMOUS_PROVIDER = "anonymous";
-    public static final String EMAIL_LINK_PROVIDER = EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD;
-
-    /**
-     * Default value for logo resource, omits the logo from the {@link AuthMethodPickerActivity}.
-     */
-    public static final int NO_LOGO = -1;
-
-    /**
      * The set of authentication providers supported in Firebase Auth UI.
      */
     public static final Set<String> SUPPORTED_PROVIDERS =
@@ -112,11 +99,7 @@ public final class AuthUI {
                     GoogleAuthProvider.PROVIDER_ID,
                     FacebookAuthProvider.PROVIDER_ID,
                     TwitterAuthProvider.PROVIDER_ID,
-                    GithubAuthProvider.PROVIDER_ID,
-                    EmailAuthProvider.PROVIDER_ID,
-                    PhoneAuthProvider.PROVIDER_ID,
-                    ANONYMOUS_PROVIDER,
-                    EMAIL_LINK_PROVIDER
+                    EmailAuthProvider.PROVIDER_ID
             )));
 
     /**
@@ -127,8 +110,7 @@ public final class AuthUI {
             Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
                     GoogleAuthProvider.PROVIDER_ID,
                     FacebookAuthProvider.PROVIDER_ID,
-                    TwitterAuthProvider.PROVIDER_ID,
-                    GithubAuthProvider.PROVIDER_ID)));
+                    TwitterAuthProvider.PROVIDER_ID)));
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static final String UNCONFIGURED_CONFIG_VALUE = "CHANGE-ME";
@@ -207,8 +189,7 @@ public final class AuthUI {
     }
 
     /**
-     * Default theme used by {@link SignInIntentBuilder#setTheme(int)} if no theme customization is
-     * required.
+     * Default theme
      */
     @StyleRes
     public static int getDefaultTheme() {
@@ -452,11 +433,7 @@ public final class AuthUI {
             GoogleAuthProvider.PROVIDER_ID,
             FacebookAuthProvider.PROVIDER_ID,
             TwitterAuthProvider.PROVIDER_ID,
-            GithubAuthProvider.PROVIDER_ID,
-            EmailAuthProvider.PROVIDER_ID,
-            PhoneAuthProvider.PROVIDER_ID,
-            ANONYMOUS_PROVIDER,
-            EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
+            EmailAuthProvider.PROVIDER_ID
     })
 
     @Retention(RetentionPolicy.SOURCE)
@@ -607,22 +584,6 @@ public final class AuthUI {
                 return this;
             }
 
-            /**
-             * Enables email link sign in instead of password based sign in. Once enabled, you must
-             * pass a valid {@link ActionCodeSettings} object using
-             * {@link #setActionCodeSettings(ActionCodeSettings)}
-             * <p>
-             * You must enable Firebase Dynamic Links in the Firebase Console to use email link
-             * sign in.
-             *
-             * @throws IllegalStateException if {@link ActionCodeSettings} is null or not
-             *                               provided with email link enabled.
-             */
-            @NonNull
-            public EmailBuilder enableEmailLinkSignIn() {
-                setProviderId(EMAIL_LINK_PROVIDER);
-                return this;
-            }
 
             /**
              * Sets the {@link ActionCodeSettings} object to be used for email link sign in.
@@ -640,306 +601,9 @@ public final class AuthUI {
                 return this;
             }
 
-            /**
-             * Disables allowing email link sign in to occur across different devices.
-             * <p>
-             * This cannot be disabled with anonymous upgrade.
-             */
-            @NonNull
-            public EmailBuilder setForceSameDevice() {
-                getParams().putBoolean(ExtraConstants.FORCE_SAME_DEVICE, true);
-                return this;
-            }
-
             @Override
             public IdpConfig build() {
-                if (super.mProviderId.equals(EMAIL_LINK_PROVIDER)) {
-                    ActionCodeSettings actionCodeSettings =
-                            getParams().getParcelable(ExtraConstants.ACTION_CODE_SETTINGS);
-                    Preconditions.checkNotNull(actionCodeSettings, "ActionCodeSettings cannot be " +
-                            "null when using email link sign in.");
-                   if (!actionCodeSettings.canHandleCodeInApp()) {
-                        // Pre-emptively fail if actionCodeSettings are misconfigured. This would
-                        // have happened when calling sendSignInLinkToEmail
-                        throw new IllegalStateException(
-                                "You must set canHandleCodeInApp in your ActionCodeSettings to " +
-                                        "true for Email-Link Sign-in.");
-                    }
-                }
                 return super.build();
-            }
-        }
-
-        /**
-         * {@link IdpConfig} builder for the phone provider.
-         */
-        public static final class PhoneBuilder extends Builder {
-            public PhoneBuilder() {
-                super(PhoneAuthProvider.PROVIDER_ID);
-            }
-
-            /**
-             * @param number the phone number in international format
-             * @see #setDefaultNumber(String, String)
-             */
-            @NonNull
-            public PhoneBuilder setDefaultNumber(@NonNull String number) {
-                Preconditions.checkUnset(getParams(),
-                        "Cannot overwrite previously set phone number",
-                        ExtraConstants.PHONE,
-                        ExtraConstants.COUNTRY_ISO,
-                        ExtraConstants.NATIONAL_NUMBER);
-                if (!PhoneNumberUtils.isValid(number)) {
-                    throw new IllegalStateException("Invalid phone number: " + number);
-                }
-
-                getParams().putString(ExtraConstants.PHONE, number);
-
-                return this;
-            }
-
-            /**
-             * Set the default phone number that will be used to populate the phone verification
-             * sign-in flow.
-             *
-             * @param iso    the phone number's country code
-             * @param number the phone number in local format
-             */
-            @NonNull
-            public PhoneBuilder setDefaultNumber(@NonNull String iso, @NonNull String number) {
-                Preconditions.checkUnset(getParams(),
-                        "Cannot overwrite previously set phone number",
-                        ExtraConstants.PHONE,
-                        ExtraConstants.COUNTRY_ISO,
-                        ExtraConstants.NATIONAL_NUMBER);
-                if (!PhoneNumberUtils.isValidIso(iso)) {
-                    throw new IllegalStateException("Invalid country iso: " + iso);
-                }
-
-                getParams().putString(ExtraConstants.COUNTRY_ISO, iso);
-                getParams().putString(ExtraConstants.NATIONAL_NUMBER, number);
-
-                return this;
-            }
-
-            /**
-             * Set the default country code that will be used in the phone verification sign-in
-             * flow.
-             *
-             * @param iso country iso
-             */
-            @NonNull
-            public PhoneBuilder setDefaultCountryIso(@NonNull String iso) {
-                Preconditions.checkUnset(getParams(),
-                        "Cannot overwrite previously set phone number",
-                        ExtraConstants.PHONE,
-                        ExtraConstants.COUNTRY_ISO,
-                        ExtraConstants.NATIONAL_NUMBER);
-                if (!PhoneNumberUtils.isValidIso(iso)) {
-                    throw new IllegalStateException("Invalid country iso: " + iso);
-                }
-
-                getParams().putString(ExtraConstants.COUNTRY_ISO,
-                        iso.toUpperCase(Locale.getDefault()));
-
-                return this;
-            }
-
-
-            /**
-             * Sets the country codes available in the country code selector for phone
-             * authentication. Takes as input a List of both country isos and codes.
-             * This is not to be called with
-             * {@link #setBlacklistedCountries(List)}.
-             * If both are called, an exception will be thrown.
-             * <p>
-             * Inputting an e-164 country code (e.g. '+1') will include all countries with
-             * +1 as its code.
-             * Example input: {'+52', 'us'}
-             * For a list of country iso or codes, see Alpha-2 isos here:
-             * https://en.wikipedia.org/wiki/ISO_3166-1
-             * and e-164 codes here: https://en.wikipedia.org/wiki/List_of_country_calling_codes
-             *
-             * @param whitelistedCountries a non empty case insensitive list of country codes
-             *                             and/or isos to be whitelisted
-             * @throws IllegalArgumentException if an empty whitelist is provided.
-             * @throws NullPointerException     if a null whitelist is provided.
-             */
-            public PhoneBuilder setWhitelistedCountries(
-                    @NonNull List<String> whitelistedCountries) {
-                if (getParams().containsKey(ExtraConstants.BLACKLISTED_COUNTRIES)) {
-                    throw new IllegalStateException(
-                            "You can either whitelist or blacklist country codes for phone " +
-                                    "authentication.");
-                }
-
-                String message = "Invalid argument: Only non-%s whitelists are valid. " +
-                        "To specify no whitelist, do not call this method.";
-                Preconditions.checkNotNull(whitelistedCountries, String.format(message, "null"));
-                Preconditions.checkArgument(!whitelistedCountries.isEmpty(), String.format
-                        (message, "empty"));
-
-                addCountriesToBundle(whitelistedCountries, ExtraConstants.WHITELISTED_COUNTRIES);
-                return this;
-            }
-
-            /**
-             * Sets the countries to be removed from the country code selector for phone
-             * authentication. Takes as input a List of both country isos and codes.
-             * This is not to be called with
-             * {@link #setWhitelistedCountries(List)}.
-             * If both are called, an exception will be thrown.
-             * <p>
-             * Inputting an e-164 country code (e.g. '+1') will include all countries with
-             * +1 as its code.
-             * Example input: {'+52', 'us'}
-             * For a list of country iso or codes, see Alpha-2 codes here:
-             * https://en.wikipedia.org/wiki/ISO_3166-1
-             * and e-164 codes here: https://en.wikipedia.org/wiki/List_of_country_calling_codes
-             *
-             * @param blacklistedCountries a non empty case insensitive list of country codes
-             *                             and/or isos to be blacklisted
-             * @throws IllegalArgumentException if an empty blacklist is provided.
-             * @throws NullPointerException     if a null blacklist is provided.
-             */
-            public PhoneBuilder setBlacklistedCountries(
-                    @NonNull List<String> blacklistedCountries) {
-                if (getParams().containsKey(ExtraConstants.WHITELISTED_COUNTRIES)) {
-                    throw new IllegalStateException(
-                            "You can either whitelist or blacklist country codes for phone " +
-                                    "authentication.");
-                }
-
-                String message = "Invalid argument: Only non-%s blacklists are valid. " +
-                        "To specify no blacklist, do not call this method.";
-                Preconditions.checkNotNull(blacklistedCountries, String.format(message, "null"));
-                Preconditions.checkArgument(!blacklistedCountries.isEmpty(), String.format
-                        (message, "empty"));
-
-                addCountriesToBundle(blacklistedCountries, ExtraConstants.BLACKLISTED_COUNTRIES);
-                return this;
-            }
-
-            @Override
-            public IdpConfig build() {
-                validateInputs();
-                return super.build();
-            }
-
-            private void addCountriesToBundle(List<String> CountryIsos, String CountryIsoType) {
-                ArrayList<String> uppercaseCodes = new ArrayList<>();
-                for (String code : CountryIsos) {
-                    uppercaseCodes.add(code.toUpperCase(Locale.getDefault()));
-                }
-
-                getParams().putStringArrayList(CountryIsoType, uppercaseCodes);
-            }
-
-            private void validateInputs() {
-                List<String> whitelistedCountries = getParams().getStringArrayList(
-                        ExtraConstants.WHITELISTED_COUNTRIES);
-                List<String> blacklistedCountries = getParams().getStringArrayList(
-                        ExtraConstants.BLACKLISTED_COUNTRIES);
-
-                if (whitelistedCountries != null &&
-                        blacklistedCountries != null) {
-                    throw new IllegalStateException(
-                            "You can either whitelist or blacklist country codes for phone " +
-                                    "authentication.");
-                } else if (whitelistedCountries != null) {
-                    validateInputs(whitelistedCountries, true);
-
-                } else if (blacklistedCountries != null) {
-                    validateInputs(blacklistedCountries, false);
-                }
-            }
-
-            private void validateInputs(List<String> countries, boolean whitelisted) {
-                validateCountryInput(countries);
-                validateDefaultCountryInput(countries, whitelisted);
-            }
-
-            private void validateCountryInput(List<String> codes) {
-                for (String code : codes) {
-                    if (!PhoneNumberUtils.isValidIso(code) && !PhoneNumberUtils.isValid(code)) {
-                        throw new IllegalArgumentException("Invalid input: You must provide a " +
-                                "valid country iso (alpha-2) or code (e-164). e.g. 'us' or '+1'.");
-                    }
-                }
-            }
-
-            private void validateDefaultCountryInput(List<String> codes, boolean whitelisted) {
-                // A default iso/code can be set via #setDefaultCountryIso() or #setDefaultNumber()
-                if (getParams().containsKey(ExtraConstants.COUNTRY_ISO) ||
-                        getParams().containsKey(ExtraConstants.PHONE)) {
-
-                    if (!validateDefaultCountryIso(codes, whitelisted)
-                            || !validateDefaultPhoneIsos(codes, whitelisted)) {
-                        throw new IllegalArgumentException("Invalid default country iso. Make " +
-                                "sure it is either part of the whitelisted list or that you "
-                                + "haven't blacklisted it.");
-                    }
-                }
-
-            }
-
-            private boolean validateDefaultCountryIso(List<String> codes, boolean whitelisted) {
-                String defaultIso = getDefaultIso();
-                return isValidDefaultIso(codes, defaultIso, whitelisted);
-            }
-
-            private boolean validateDefaultPhoneIsos(List<String> codes, boolean whitelisted) {
-                List<String> phoneIsos = getPhoneIsosFromCode();
-                for (String iso : phoneIsos) {
-                    if (isValidDefaultIso(codes, iso, whitelisted)) {
-                        return true;
-                    }
-                }
-                return phoneIsos.isEmpty();
-            }
-
-            private boolean isValidDefaultIso(List<String> codes, String iso, boolean whitelisted) {
-                if (iso == null) return true;
-                boolean containsIso = containsCountryIso(codes, iso);
-                return containsIso && whitelisted || !containsIso && !whitelisted;
-
-            }
-
-            private boolean containsCountryIso(List<String> codes, String iso) {
-                iso = iso.toUpperCase(Locale.getDefault());
-                for (String code : codes) {
-                    if (PhoneNumberUtils.isValidIso(code)) {
-                        if (code.equals(iso)) {
-                            return true;
-                        }
-                    } else {
-                        List<String> isos = PhoneNumberUtils.getCountryIsosFromCountryCode(code);
-                        if (isos.contains(iso)) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            private List<String> getPhoneIsosFromCode() {
-                List<String> isos = new ArrayList<>();
-                String phone = getParams().getString(ExtraConstants.PHONE);
-                if (phone != null && phone.startsWith("+")) {
-                    String countryCode = "+" + PhoneNumberUtils.getPhoneNumber(phone)
-                            .getCountryCode();
-                    List<String> isosToAdd = PhoneNumberUtils.
-                            getCountryIsosFromCountryCode(countryCode);
-                    if (isosToAdd != null) {
-                        isos.addAll(isosToAdd);
-                    }
-                }
-                return isos;
-            }
-
-            private String getDefaultIso() {
-                return getParams().containsKey(ExtraConstants.COUNTRY_ISO) ?
-                        getParams().getString(ExtraConstants.COUNTRY_ISO) : null;
             }
         }
 
@@ -1067,52 +731,6 @@ public final class AuthUI {
             }
         }
 
-        /**
-         * {@link IdpConfig} builder for the GitHub provider.
-         */
-        public static final class GitHubBuilder extends Builder {
-            public GitHubBuilder() {
-                //noinspection deprecation taking a hit for the backcompat team
-                super(GithubAuthProvider.PROVIDER_ID);
-                if (!ProviderAvailability.IS_GITHUB_AVAILABLE) {
-                    throw new RuntimeException(
-                            "GitHub provider cannot be configured " +
-                                    "without dependency. Did you forget to add " +
-                                    "'com.firebaseui:firebase-ui-auth-github:VERSION' dependency?");
-                }
-                Preconditions.checkConfigured(getApplicationContext(),
-                        "GitHub provider unconfigured. Make sure to add your client id and secret" +
-                                "." +
-                                " See the docs for more info:" +
-                                " https://github" +
-                                ".com/firebase/FirebaseUI-Android/blob/master/auth/README" +
-                                ".md#github",
-                        R.string.firebase_web_host,
-                        R.string.github_client_id,
-                        R.string.github_client_secret);
-            }
-
-            /**
-             * Specifies the additional permissions to be requested. Available permissions can be
-             * found
-             * <ahref="https://developer.github.com/apps/building-oauth-apps/scopes-for-oauth-apps/#available-scopes">here</a>.
-             */
-            @NonNull
-            public GitHubBuilder setPermissions(@NonNull List<String> permissions) {
-                getParams().putStringArrayList(
-                        ExtraConstants.GITHUB_PERMISSIONS, new ArrayList<>(permissions));
-                return this;
-            }
-        }
-
-        /**
-         * {@link IdpConfig} builder for the Anonymous provider.
-         */
-        public static final class AnonymousBuilder extends Builder {
-            public AnonymousBuilder() {
-                super(ANONYMOUS_PROVIDER);
-            }
-        }
     }
 
     /**
@@ -1121,15 +739,6 @@ public final class AuthUI {
     @SuppressWarnings(value = "unchecked")
     private abstract class AuthIntentBuilder<T extends AuthIntentBuilder> {
         final List<IdpConfig> mProviders = new ArrayList<>();
-        int mLogo = NO_LOGO;
-
-        int mForgotPassword;
-        int mEmail;
-        int mPassword;
-        int mDisplayName;
-
-        int mTheme = getDefaultTheme();
-
 
         String mTosUrl;
         String mPrivacyPolicyUrl;
@@ -1137,80 +746,6 @@ public final class AuthUI {
         boolean mAlwaysShowProviderChoice = false;
         boolean mEnableCredentials = true;
         boolean mEnableHints = true;
-        AuthMethodPickerLayout mAuthMethodPickerLayout = null;
-
-        /**
-         * Specifies the theme to use for the application flow. If no theme is specified, a
-         * default theme will be used.
-         */
-        @NonNull
-        public T setTheme(@StyleRes int theme) {
-            mTheme = Preconditions.checkValidStyle(
-                    mApp.getApplicationContext(),
-                    theme,
-                    "theme identifier is unknown or not a style definition");
-            return (T) this;
-        }
-
-        /**
-         * Specifies the logo to use for the {@link AuthMethodPickerActivity}. If no logo is
-         * specified, none will be used.
-         */
-        @NonNull
-        public T setLogo(@DrawableRes int logo) {
-            mLogo = logo;
-            return (T) this;
-        }
-
-        @NonNull
-        public T setForgotPassword(@IdRes int forgotPassword) {
-            mForgotPassword = forgotPassword;
-            return (T) this;
-        }
-
-        @NonNull
-        public T setEmail(@IdRes int email) {
-            mEmail = email;
-            return (T) this;
-        }
-
-        @NonNull
-        public T setPassword(@IdRes int password) {
-            mPassword = password;
-            return (T) this;
-        }
-
-        @NonNull
-        public T setDisplayName(@IdRes int displayName) {
-            mDisplayName = displayName;
-            return (T) this;
-        }
-
-        /**
-         * Specifies the terms-of-service URL for the application.
-         *
-         * @deprecated Please use {@link #setTosAndPrivacyPolicyUrls(String, String)} For the Tos
-         * link to be displayed a Privacy Policy url must also be provided.
-         */
-        @NonNull
-        @Deprecated
-        public T setTosUrl(@Nullable String tosUrl) {
-            mTosUrl = tosUrl;
-            return (T) this;
-        }
-
-        /**
-         * Specifies the privacy policy URL for the application.
-         *
-         * @deprecated Please use {@link #setTosAndPrivacyPolicyUrls(String, String)} For the
-         * Privacy Policy link to be displayed a Tos url must also be provided.
-         */
-        @NonNull
-        @Deprecated
-        public T setPrivacyPolicyUrl(@Nullable String privacyPolicyUrl) {
-            mPrivacyPolicyUrl = privacyPolicyUrl;
-            return (T) this;
-        }
 
         @NonNull
         public T setTosAndPrivacyPolicyUrls(@NonNull String tosUrl,
@@ -1239,12 +774,6 @@ public final class AuthUI {
         @NonNull
         public T setAvailableProviders(@NonNull List<IdpConfig> idpConfigs) {
             Preconditions.checkNotNull(idpConfigs, "idpConfigs cannot be null");
-            if (idpConfigs.size() == 1 &&
-                    idpConfigs.get(0).getProviderId().equals(ANONYMOUS_PROVIDER)) {
-                throw new IllegalStateException("Sign in as guest cannot be the only sign in " +
-                        "method. In this case, sign the user in anonymously your self; " +
-                        "no UI is needed.");
-            }
 
             mProviders.clear();
 
@@ -1291,17 +820,6 @@ public final class AuthUI {
             return (T) this;
         }
 
-        /**
-         * Set a custom layout for the AuthMethodPickerActivity screen.
-         * See {@link AuthMethodPickerLayout}.
-         * @param authMethodPickerLayout custom layout descriptor object.
-         */
-        @NonNull
-        public T setAuthMethodPickerLayout(@NonNull AuthMethodPickerLayout authMethodPickerLayout) {
-            mAuthMethodPickerLayout = authMethodPickerLayout;
-            return (T) this;
-        }
-          
         /**
          * Forces the sign-in method choice screen to always show, even if there is only
          * a single provider configured.
@@ -1351,49 +869,17 @@ public final class AuthUI {
             return this;
         }
 
-        /**
-         * Enables upgrading anonymous accounts to full accounts during the sign-in flow.
-         * This is disabled by default.
-         *
-         * @throws IllegalStateException when you attempt to enable anonymous user upgrade
-         * without forcing the same device flow for email link sign in.
-         */
-        @NonNull
-        public SignInIntentBuilder enableAnonymousUsersAutoUpgrade() {
-            mEnableAnonymousUpgrade = true;
-            validateEmailBuilderConfig();
-            return this;
-        }
-
-        private void validateEmailBuilderConfig() {
-            for (int i = 0; i < mProviders.size(); i++) {
-                IdpConfig config = mProviders.get(i);
-                if (config.getProviderId().equals(EMAIL_LINK_PROVIDER)) {
-                    boolean emailLinkForceSameDevice =
-                            config.getParams().getBoolean(ExtraConstants.FORCE_SAME_DEVICE, true);
-                    if (!emailLinkForceSameDevice) {
-                        throw new IllegalStateException("You must force the same device flow " +
-                                "when using email link sign in with anonymous user upgrade");
-                    }
-                }
-            }
-        }
 
         @Override
         protected FlowParameters getFlowParams() {
             return new FlowParameters(
                     mApp.getName(),
                     mProviders,
-                    mTheme,
-                    mLogo,
                     mTosUrl,
                     mPrivacyPolicyUrl,
                     mEnableCredentials,
                     mEnableHints,
-                    mEnableAnonymousUpgrade,
-                    mAlwaysShowProviderChoice,
-                    mEmailLink,
-                    mAuthMethodPickerLayout);
+                    mAlwaysShowProviderChoice);
         }
     }
 }

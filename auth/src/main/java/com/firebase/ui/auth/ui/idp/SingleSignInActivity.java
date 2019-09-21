@@ -6,13 +6,11 @@ import android.os.Bundle;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
 import com.firebase.ui.auth.FirebaseUiException;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.data.remote.FacebookSignInHandler;
-import com.firebase.ui.auth.data.remote.GitHubSignInHandlerBridge;
 import com.firebase.ui.auth.data.remote.GoogleSignInHandler;
 import com.firebase.ui.auth.data.remote.TwitterSignInHandler;
 import com.firebase.ui.auth.ui.InvisibleActivityBase;
@@ -75,12 +73,6 @@ public class SingleSignInActivity extends InvisibleActivityBase {
                 twitter.init(null);
                 mProvider = twitter;
                 break;
-            case GithubAuthProvider.PROVIDER_ID:
-                ProviderSignInBase<AuthUI.IdpConfig> github =
-                        supplier.get(GitHubSignInHandlerBridge.HANDLER_CLASS);
-                github.init(providerConfig);
-                mProvider = github;
-                break;
             default:
                 throw new IllegalStateException("Invalid provider id: " + provider);
         }
@@ -105,12 +97,7 @@ public class SingleSignInActivity extends InvisibleActivityBase {
 
             @Override
             protected void onFailure(@NonNull Exception e) {
-                if (e instanceof FirebaseAuthAnonymousUpgradeException) {
-                    IdpResponse res = ((FirebaseAuthAnonymousUpgradeException) e).getResponse();
-                    finish(RESULT_CANCELED, new Intent().putExtra(ExtraConstants.IDP_RESPONSE, res));
-                } else {
                     finish(RESULT_CANCELED, IdpResponse.getErrorIntent(e));
-                }
             }
         });
 

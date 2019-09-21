@@ -25,14 +25,12 @@ import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
 import com.firebase.ui.auth.FirebaseUiException;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.R;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.data.remote.FacebookSignInHandler;
-import com.firebase.ui.auth.data.remote.GitHubSignInHandlerBridge;
 import com.firebase.ui.auth.data.remote.GoogleSignInHandler;
 import com.firebase.ui.auth.data.remote.TwitterSignInHandler;
 import com.firebase.ui.auth.ui.AppCompatBase;
@@ -42,10 +40,7 @@ import com.firebase.ui.auth.util.data.ProviderUtils;
 import com.firebase.ui.auth.viewmodel.ProviderSignInBase;
 import com.firebase.ui.auth.viewmodel.ResourceObserver;
 import com.firebase.ui.auth.viewmodel.idp.LinkingSocialProviderResponseHandler;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.GithubAuthProvider;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.*;
 
 import androidx.annotation.*;
 import androidx.lifecycle.*;
@@ -67,6 +62,7 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
             FlowParameters flowParams,
             User existingUser,
             @Nullable IdpResponse requestedUserResponse) {
+
         return createBaseIntent(context, WelcomeBackIdpPrompt.class, flowParams)
                 .putExtra(ExtraConstants.IDP_RESPONSE, requestedUserResponse)
                 .putExtra(ExtraConstants.USER, existingUser);
@@ -80,20 +76,21 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
         mDoneButton = findViewById(R.id.welcome_back_idp_button);
         mProgressBar = findViewById(R.id.top_progress_bar);
 
-        User existingUser = User.getUser(getIntent());
+        User user = User.getUser(getIntent());
+
         IdpResponse requestedUserResponse = IdpResponse.fromResultIntent(getIntent());
         ViewModelProvider supplier = ViewModelProviders.of(this);
 
         final LinkingSocialProviderResponseHandler handler =
                 supplier.get(LinkingSocialProviderResponseHandler.class);
+
         handler.init(getFlowParams());
         if (requestedUserResponse != null) {
-            handler.setRequestedSignInCredentialForEmail(
-                    ProviderUtils.getAuthCredential(requestedUserResponse),
-                    existingUser.getEmail());
+            AuthCredential credential = ProviderUtils.getAuthCredential(requestedUserResponse);
+            handler.setRequestedSignInCredentialForEmail(credential, user.getEmail());
         }
 
-        String providerId = existingUser.getProviderId();
+        String providerId = user.getProviderId();
         AuthUI.IdpConfig config =
                 ProviderUtils.getConfigFromIdps(getFlowParams().providers, providerId);
         if (config == null) {
@@ -109,7 +106,7 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
         switch (providerId) {
             case GoogleAuthProvider.PROVIDER_ID:
                 GoogleSignInHandler google = supplier.get(GoogleSignInHandler.class);
-                google.init(new GoogleSignInHandler.Params(config, existingUser.getEmail()));
+                google.init(new GoogleSignInHandler.Params(config, user.getEmail()));
                 mProvider = google;
 
                 providerName = R.string.fui_idp_name_google;
@@ -127,14 +124,6 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
                 mProvider = twitter;
 
                 providerName = R.string.fui_idp_name_twitter;
-                break;
-            case GithubAuthProvider.PROVIDER_ID:
-                ProviderSignInBase<AuthUI.IdpConfig> github =
-                        supplier.get(GitHubSignInHandlerBridge.HANDLER_CLASS);
-                github.init(config);
-                mProvider = github;
-
-                providerName = R.string.fui_idp_name_github;
                 break;
             default:
                 throw new IllegalStateException("Invalid provider id: " + providerId);
@@ -154,7 +143,7 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
 
         ((TextView) findViewById(R.id.welcome_back_idp_prompt)).setText(getString(
                 R.string.fui_welcome_back_idp_prompt,
-                existingUser.getEmail(),
+                user.getEmail(),
                 getString(providerName)));
 
         mDoneButton.setOnClickListener(new OnClickListener() {
@@ -172,12 +161,7 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
 
             @Override
             protected void onFailure(@NonNull Exception e) {
-                if (e instanceof FirebaseAuthAnonymousUpgradeException) {
-                    IdpResponse response = ((FirebaseAuthAnonymousUpgradeException) e).getResponse();
-                    finish(ErrorCodes.ANONYMOUS_UPGRADE_MERGE_CONFLICT, response.toIntent());
-                } else {
                     finish(RESULT_CANCELED, IdpResponse.getErrorIntent(e));
-                }
             }
         });
 

@@ -53,31 +53,17 @@ public class AuthOperationManager {
     }
 
     public Task<AuthResult> createOrLinkUserWithEmailAndPassword(@NonNull FirebaseAuth auth,
-                                                                 @NonNull FlowParameters flowParameters,
                                                                  @NonNull String email,
                                                                  @NonNull String password) {
-        if (canUpgradeAnonymous(auth, flowParameters)) {
-            AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-            return auth.getCurrentUser().linkWithCredential(credential);
-        } else {
-            return auth.createUserWithEmailAndPassword(email, password);
-        }
+             return auth.createUserWithEmailAndPassword(email, password);
+
     }
 
     public Task<AuthResult> signInAndLinkWithCredential(@NonNull FirebaseAuth auth,
-                                                        @NonNull FlowParameters flowParameters,
                                                         @NonNull AuthCredential credential) {
-        if (canUpgradeAnonymous(auth, flowParameters)) {
-            return auth.getCurrentUser().linkWithCredential(credential);
-        } else {
             return auth.signInWithCredential(credential);
-        }
     }
 
-    public boolean canUpgradeAnonymous(FirebaseAuth auth, FlowParameters flowParameters) {
-        return flowParameters.isAnonymousUpgradeEnabled() && auth.getCurrentUser() != null &&
-                auth.getCurrentUser().isAnonymous();
-    }
 
     @NonNull
     public Task<AuthResult> validateCredential(AuthCredential credential,

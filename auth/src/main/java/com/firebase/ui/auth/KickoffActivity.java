@@ -76,19 +76,7 @@ public class KickoffActivity extends InvisibleActivityBase {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RequestCodes.EMAIL_FLOW
-                && (resultCode == RequestCodes.EMAIL_LINK_WRONG_DEVICE_FLOW
-                || resultCode == RequestCodes.EMAIL_LINK_INVALID_LINK_FLOW)) {
-            invalidateEmailLink();
-        }
-
         mKickstarter.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void invalidateEmailLink() {
-        FlowParameters flowParameters = getFlowParams();
-        flowParameters.emailLink = null;
-        setIntent(getIntent().putExtra(ExtraConstants.FLOW_PARAMS,
-                flowParameters));
-    }
 }

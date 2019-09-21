@@ -7,6 +7,8 @@ import kotlin.String
  *   `$ ./gradlew buildSrcVersions`
  */
 object Libs {
+  val vvalidator: String = "com.afollestad:vvalidator:" + Versions.vvalidator
+
   /**
    * http://developer.android.com/tools/extras/support-materialProgress.html
    */

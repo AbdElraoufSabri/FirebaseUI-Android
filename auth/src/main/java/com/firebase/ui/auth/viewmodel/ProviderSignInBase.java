@@ -25,5 +25,6 @@ public abstract class ProviderSignInBase<T> extends OperableViewModel<T, Resourc
      */
     public abstract void startSignIn(@NonNull HelperActivityBase activity);
 
+
     public abstract void onActivityResult(int requestCode, int resultCode, @Nullable Intent data);
 }

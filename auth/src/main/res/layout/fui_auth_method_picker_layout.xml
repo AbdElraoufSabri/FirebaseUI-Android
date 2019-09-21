@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    app:layout_constraintHorizontal_bias="0.5f"
+    app:layout_constraintVertical_bias="0.5f"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="32dp"
-    android:paddingEnd="32dp"
     android:clipToPadding="false">
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
@@ -17,15 +17,14 @@
         tools:visibility="visible"
         tools:ignore="MissingConstraints" />
 
-    <!-- TODO remove lint ignore once the bug is fixed:
-         https://issuetracker.google.com/issues/38281866-->
-
     <ScrollView
         android:id="@+id/container"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginBottom="@dimen/fui_field_padding_vert"
         android:fillViewport="true"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -53,7 +52,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/container"
                 app:layout_constraintVertical_weight="1"
                 tools:ignore="ContentDescription"
-                app:srcCompat="@drawable/ic_logo"
+                android:src="@drawable/ic_logo"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -63,14 +62,49 @@
                 android:textColor="#6f6f6f"
                 android:textSize="16sp"
                 />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#6f6f6f"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:text="Sign in using"
+                    android:textColor="#6f6f6f"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:background="#6f6f6f" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 >
+
                 <LinearLayout
-                    android:id="@+id/facebookSignIn"
+                    android:id="@+id/facebookSignInButton"
                     android:layout_width="0dp"
                     android:layout_height="43dp"
                     android:layout_weight="1"
@@ -85,10 +119,12 @@
                         android:layout_height="20dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="8dp"
-                        app:srcCompat="@drawable/ic_facebook_logo"
+                        android:src="@drawable/fui_ic_facebook_white_22dp"
                         />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:visibility="gone"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
@@ -98,21 +134,53 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         />
-                </LinearLayout>
 
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent" />
+                </LinearLayout>
                 <View
                     android:layout_width="8dp"
                     android:layout_height="match_parent" />
 
                 <LinearLayout
-                    android:id="@+id/googleSignIn"
+                    android:id="@+id/googleSignInButton"
                     android:layout_width="0dp"
                     android:layout_height="43dp"
                     android:layout_weight="1"
                     android:background="@drawable/google_sign_in_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="8dp"
+                        android:src="@drawable/fui_ic_googleg_color_24dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:visibility="gone"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:text="Google"
+                        android:textColor="#6f6f6f"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+                <LinearLayout
+                    android:id="@+id/twitterSignInButton"
+                    android:layout_width="0dp"
+                    android:layout_height="43dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/twitter_sign_in_button"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
@@ -123,19 +191,21 @@
                         android:layout_height="20dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="8dp"
-                        app:srcCompat="@drawable/ic_google_logo"
+                        android:src="@drawable/fui_ic_twitter_bird_white_24dp"
                         />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:layout_marginBottom="12dp"
-                        android:text="Google"
-                        android:textColor="#6f6f6f"
+                        android:text="Twitter"
+                        android:textColor="@android:color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         />
+
                 </LinearLayout>
 
 
@@ -175,116 +245,10 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/auth_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/emailEditTextLayout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:errorEnabled="true"
-                    app:errorTextAppearance="@style/error">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/emailEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="Email"
-                        android:inputType="textEmailAddress"
-                        android:textColor="@color/fui_edit_text_color"
-                        android:textColorHint="@color/fui_edit_hint_text_color"
-                        android:textSize="@dimen/fui_edit_text_font_size" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp"
-                    android:text="Your session has expired please login again"
-                    android:visibility="gone" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passwordEditTextLayout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:errorEnabled="true"
-                    app:errorTextAppearance="@style/error"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/passwordEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="Password"
-                        android:inputType="textPassword"
-                        android:textColor="@color/fui_edit_text_color"
-                        android:textColorHint="@color/fui_edit_hint_text_color"
-                        android:textSize="@dimen/fui_edit_text_font_size" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:gravity=""
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/signInButton"
-                        android:layout_width="0dp"
-                        android:layout_weight="5"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/button_background"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:text="Sign in"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-
-                        />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/forgotPassword"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp"
-                        android:text="forgot ?"
-                        android:textColor="@color/fui_border_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp" />
-
-                </LinearLayout>
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txt_dont_have_account_sign_up"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="Don't have an account? Sign up"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ripple
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:color="#EEEEEE">     <!-- ripple color -->
+
+<!-- for Button -->
+<item>
+    <shape android:shape="rectangle">
+        <stroke android:width="@dimen/border_dimen" android:color="@color/fui_bgTwitter" />
+        <corners android:radius="3dp"/>
+        <solid android:color="@color/fui_bgTwitter"/>
+    </shape>
+</item>
+
+</ripple>

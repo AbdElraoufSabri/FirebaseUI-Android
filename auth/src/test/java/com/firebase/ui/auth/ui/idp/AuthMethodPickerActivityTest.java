@@ -146,7 +146,7 @@ public class AuthMethodPickerActivityTest {
 
     private AuthMethodPickerActivity createActivityWithCustomLayout(List<String> providers,
                                                                     AuthMethodPickerLayout layout) {
-        Intent startIntent = AuthMethodPickerActivity.createIntent(
+        Intent startIntent = AuthMethodPickerActivity.Companion.createIntent(
                 RuntimeEnvironment.application,
                 TestHelper.getFlowParameters(providers, false, layout));
 
@@ -158,7 +158,7 @@ public class AuthMethodPickerActivityTest {
     }
 
     private AuthMethodPickerActivity createActivity(List<String> providers) {
-        Intent startIntent = AuthMethodPickerActivity.createIntent(
+        Intent startIntent = AuthMethodPickerActivity.Companion.createIntent(
                 RuntimeEnvironment.application,
                 TestHelper.getFlowParameters(providers));
 

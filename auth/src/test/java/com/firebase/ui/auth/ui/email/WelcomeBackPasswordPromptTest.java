@@ -47,7 +47,7 @@ public class WelcomeBackPasswordPromptTest {
     }
 
     private WelcomeBackPasswordPrompt createActivity() {
-        Intent startIntent = WelcomeBackPasswordPrompt.createIntent(
+        Intent startIntent = WelcomeBackPasswordPrompt.Companion.createIntent(
                 RuntimeEnvironment.application,
                 TestHelper.getFlowParameters(Collections.singletonList(EmailAuthProvider.PROVIDER_ID)),
                 new IdpResponse.Builder(new User.Builder(

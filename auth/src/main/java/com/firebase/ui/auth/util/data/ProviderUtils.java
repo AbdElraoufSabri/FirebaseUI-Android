@@ -30,9 +30,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 
@@ -41,13 +39,8 @@ import java.util.List;
 
 import androidx.annotation.*;
 
-import static com.firebase.ui.auth.AuthUI.EMAIL_LINK_PROVIDER;
-
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class ProviderUtils {
-    private static final String GITHUB_IDENTITY = "https://github.com";
-    private static final String PHONE_IDENTITY = "https://phone.firebase";
-
     private ProviderUtils() {
         throw new AssertionError("No instance for you!");
     }
@@ -62,8 +55,6 @@ public final class ProviderUtils {
             case TwitterAuthProvider.PROVIDER_ID:
                 return TwitterAuthProvider.getCredential(response.getIdpToken(),
                         response.getIdpSecret());
-            case GithubAuthProvider.PROVIDER_ID:
-                return GithubAuthProvider.getCredential(response.getIdpToken());
             default:
                 return null;
         }
@@ -88,14 +79,8 @@ public final class ProviderUtils {
                 return FacebookAuthProvider.PROVIDER_ID;
             case TwitterAuthProvider.TWITTER_SIGN_IN_METHOD:
                 return TwitterAuthProvider.PROVIDER_ID;
-            case GithubAuthProvider.GITHUB_SIGN_IN_METHOD:
-                return GithubAuthProvider.PROVIDER_ID;
-            case PhoneAuthProvider.PHONE_SIGN_IN_METHOD:
-                return PhoneAuthProvider.PROVIDER_ID;
             case EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD:
                 return EmailAuthProvider.PROVIDER_ID;
-            case EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD:
-                return EMAIL_LINK_PROVIDER;
             default:
                 throw new IllegalStateException("Unknown method: " + method);
         }
@@ -114,10 +99,6 @@ public final class ProviderUtils {
                 return IdentityProviders.FACEBOOK;
             case TwitterAuthProvider.PROVIDER_ID:
                 return IdentityProviders.TWITTER;
-            case GithubAuthProvider.PROVIDER_ID:
-                return GITHUB_IDENTITY;
-            case PhoneAuthProvider.PROVIDER_ID:
-                return PHONE_IDENTITY;
             // The account type for email/password creds is null
             case EmailAuthProvider.PROVIDER_ID:
             default:
@@ -134,10 +115,6 @@ public final class ProviderUtils {
                 return FacebookAuthProvider.PROVIDER_ID;
             case IdentityProviders.TWITTER:
                 return TwitterAuthProvider.PROVIDER_ID;
-            case GITHUB_IDENTITY:
-                return GithubAuthProvider.PROVIDER_ID;
-            case PHONE_IDENTITY:
-                return PhoneAuthProvider.PROVIDER_ID;
             default:
                 return null;
         }
@@ -151,12 +128,7 @@ public final class ProviderUtils {
                 return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_facebook);
             case TwitterAuthProvider.PROVIDER_ID:
                 return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_twitter);
-            case GithubAuthProvider.PROVIDER_ID:
-                return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_github);
-            case PhoneAuthProvider.PROVIDER_ID:
-                return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_phone);
             case EmailAuthProvider.PROVIDER_ID:
-            case EMAIL_LINK_PROVIDER:
                 return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_email);
             default:
                 return null;
@@ -200,6 +172,7 @@ public final class ProviderUtils {
                         }
 
                         List<String> allowedProviders = new ArrayList<>(params.providers.size());
+
                         for (AuthUI.IdpConfig provider : params.providers) {
                             allowedProviders.add(provider.getProviderId());
                         }
@@ -227,22 +200,16 @@ public final class ProviderUtils {
 
                     private void reorderPriorities(List<String> providers) {
                         // Prioritize Google over everything else
-                        // Prioritize email-password sign in second
-                        // De-prioritize email link sign in
-                        changePriority(providers, EmailAuthProvider.PROVIDER_ID, true);
-                        changePriority(providers, GoogleAuthProvider.PROVIDER_ID, true);
-                        changePriority(providers, EMAIL_LINK_PROVIDER, false);
+                         // Prioritize email-password sign in second
+
+                        maximumPriority(providers, EmailAuthProvider.PROVIDER_ID);
+                        maximumPriority(providers, GoogleAuthProvider.PROVIDER_ID);
                     }
 
-                    private void changePriority(List<String> providers,
-                                                String id,
-                                                boolean maximizePriority) {
+                    private void maximumPriority(List<String> providers,
+                                                 String id) {
                         if (providers.remove(id)) {
-                            if (maximizePriority) {
-                                providers.add(0, id);
-                            } else {
-                                providers.add(id);
-                            }
+                            providers.add(0, id);
                         }
                     }
                 });
@@ -253,19 +220,16 @@ public final class ProviderUtils {
             @NonNull FlowParameters params,
             @NonNull String email) {
         return fetchSortedProviders(auth, params, email)
-                .continueWithTask(new Continuation<List<String>, Task<String>>() {
-                    @Override
-                    public Task<String> then(@NonNull Task<List<String>> task) {
-                        if (!task.isSuccessful()) {
-                            return Tasks.forException(task.getException());
-                        }
-                        List<String> providers = task.getResult();
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        return Tasks.forException(task.getException());
+                    }
+                    List<String> providers = task.getResult();
 
-                        if (providers.isEmpty()) {
-                            return Tasks.forResult(null);
-                        } else {
-                            return Tasks.forResult(providers.get(0));
-                        }
+                    if (providers.isEmpty()) {
+                        return Tasks.forResult(null);
+                    } else {
+                        return Tasks.forResult(providers.get(0));
                     }
                 });
     }

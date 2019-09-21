@@ -26,8 +26,7 @@ public abstract class AppCompatBase extends HelperActivityBase {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.FirebaseUI); // Provides default values
-        setTheme(getFlowParams().themeId);
+        setTheme(R.style.FirebaseUI);
     }
 
     protected void switchFragment(@NonNull Fragment fragment,

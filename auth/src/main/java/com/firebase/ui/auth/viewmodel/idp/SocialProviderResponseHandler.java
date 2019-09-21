@@ -12,7 +12,6 @@ import com.firebase.ui.auth.data.model.IntentRequiredException;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.data.remote.ProfileMerger;
-import com.firebase.ui.auth.ui.email.WelcomeBackEmailLinkPrompt;
 import com.firebase.ui.auth.ui.email.WelcomeBackPasswordPrompt;
 import com.firebase.ui.auth.ui.idp.WelcomeBackIdpPrompt;
 import com.firebase.ui.auth.util.data.AuthOperationManager;
@@ -30,8 +29,6 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import java.util.List;
 
 import androidx.annotation.*;
-
-import static com.firebase.ui.auth.AuthUI.EMAIL_LINK_PROVIDER;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class SocialProviderResponseHandler extends SignInViewModelBase {
@@ -55,7 +52,6 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
 
         AuthOperationManager.getInstance().signInAndLinkWithCredential(
                 getAuth(),
-                getArguments(),
                 credential)
                 .continueWithTask(new ProfileMerger(response))
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -86,10 +82,11 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
                                     .addOnSuccessListener(new OnSuccessListener<List<String>>() {
                                         @Override
                                         public void onSuccess(List<String> providers) {
-                                            if (providers.contains(response.getProviderType())) {
-                                                // Case 1
-                                                handleMergeFailure(credential);
-                                            } else if (providers.isEmpty()) {
+//                                            if (providers.contains(response.getProviderType())) {
+//                                                // Case 1
+//                                                handleMergeFailure(credential);
+//                                            } else
+                                                if (providers.isEmpty()) {
                                                 setResult(Resource.<IdpResponse>forFailure(
                                                         new FirebaseUiException(
                                                                 ErrorCodes.DEVELOPER_ERROR,
@@ -132,20 +129,11 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
         if (provider.equals(EmailAuthProvider.PROVIDER_ID)) {
             // Start email welcome back flow
             setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                    WelcomeBackPasswordPrompt.createIntent(
+                    WelcomeBackPasswordPrompt.Companion.createIntent(
                             getApplication(),
                             getArguments(),
                             response),
                     RequestCodes.ACCOUNT_LINK_FLOW
-            )));
-        } else if (provider.equals(EMAIL_LINK_PROVIDER)) {
-            // Start email link welcome back flow
-            setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                    WelcomeBackEmailLinkPrompt.createIntent(
-                            getApplication(),
-                            getArguments(),
-                            response),
-                    RequestCodes.WELCOME_BACK_EMAIL_LINK_FLOW
             )));
         } else {
             // Start Idp welcome back flow

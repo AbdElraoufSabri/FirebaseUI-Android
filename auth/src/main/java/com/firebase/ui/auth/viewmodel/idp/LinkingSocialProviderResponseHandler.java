@@ -52,38 +52,9 @@ public class LinkingSocialProviderResponseHandler extends SignInViewModelBase {
 
         setResult(Resource.<IdpResponse>forLoading());
 
-        final AuthOperationManager authOperationManager = AuthOperationManager.getInstance();
         final AuthCredential credential = ProviderUtils.getAuthCredential(response);
 
-        if (authOperationManager.canUpgradeAnonymous(getAuth(), getArguments())) {
-            if (mRequestedSignInCredential == null) {
-                // The user has provided a valid credential by signing in with a federated
-                // idp. linkWithCredential will fail because the user is anonymous and the account
-                // exists (we're in the welcome back flow).
-                // We know that they are signing in with the same IDP because requestSignInCredential
-                // is null.
-                // We just need to have the developer handle the merge failure.
-                handleMergeFailure(credential);
-            } else {
-                // The user has logged in with an IDP that has the same email with another IDP
-                // present on the account.
-                // These IDPs belong to the same account - they must be linked, but we can't lose
-                // our anonymous user session
-                authOperationManager.safeLink(credential, mRequestedSignInCredential, getArguments())
-                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                            @Override
-                            public void onSuccess(AuthResult result) {
-                                handleMergeFailure(credential);
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                setResult(Resource.<IdpResponse>forFailure(e));
-                            }
-                        });
-            }
-        } else {
+
             getAuth().signInWithCredential(credential)
                     .continueWithTask(new Continuation<AuthResult, Task<AuthResult>>() {
                         @Override
@@ -119,6 +90,6 @@ public class LinkingSocialProviderResponseHandler extends SignInViewModelBase {
                             }
                         }
                     });
-        }
+
     }
 }

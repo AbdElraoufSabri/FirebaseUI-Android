@@ -12,6 +12,8 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
+  const val vvalidator: String = "0.5.1"
+
   const val annotation: String = "1.1.0"
 
   const val appcompat: String = "1.1.0"

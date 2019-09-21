@@ -31,8 +31,7 @@ public class InvisibleActivityBase extends HelperActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fui_activity_invisible);
 
-        // Create an indeterminate, circular progress bar in the app's theme
-        mProgressBar = new MaterialProgressBar(new ContextThemeWrapper(this, getFlowParams().themeId));
+        mProgressBar = new MaterialProgressBar(new ContextThemeWrapper(this, R.style.FirebaseUI));
         mProgressBar.setIndeterminate(true);
         mProgressBar.setVisibility(View.GONE);
 

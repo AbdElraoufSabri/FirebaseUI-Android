@@ -14,10 +14,7 @@ import com.facebook.GraphResponse;
 import com.facebook.WebDialog;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.*;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.ui.HelperActivityBase;
@@ -79,7 +76,7 @@ public class FacebookSignInHandler extends ProviderSignInBase<AuthUI.IdpConfig> 
 
     @Override
     public void startSignIn(@NonNull HelperActivityBase activity) {
-        WebDialog.setWebDialogTheme(activity.getFlowParams().themeId);
+        WebDialog.setWebDialogTheme(R.style.FirebaseUI);
         LoginManager.getInstance().logInWithReadPermissions(activity, mPermissions);
     }
 

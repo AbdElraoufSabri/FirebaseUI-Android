@@ -1,4 +1,9 @@
 import com.android.build.gradle.internal.dsl.TestOptions
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
+apply(plugin = "kotlin-android")
+apply(plugin = "kotlin-android-extensions")
+apply(plugin = "kotlin-kapt")
 
 android {
 
@@ -15,6 +20,7 @@ android {
     }
 }
 
+
 dependencies {
     implementation(Libs.material)
     implementation(Libs.browser)
@@ -22,7 +28,7 @@ dependencies {
     implementation(Libs.annotation)
     implementation(Libs.appcompat)
     implementation(Libs.library)
-
+    implementation(Libs.vvalidator)
     implementation(Libs.lifecycle_extensions)
     annotationProcessor(Libs.lifecycle_compiler)
 
@@ -39,5 +45,4 @@ dependencies {
     testImplementation(Libs.robolectric)
     testImplementation(Libs.facebook_login)
     testImplementation(Libs.twitter_core) { isTransitive = true }
-
 }

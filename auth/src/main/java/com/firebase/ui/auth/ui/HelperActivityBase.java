@@ -28,15 +28,13 @@ public abstract class HelperActivityBase extends AppCompatActivity implements Pr
     private FlowParameters mParams;
 
     protected static Intent createBaseIntent(
-            @NonNull Context context,
-            @NonNull Class<? extends Activity> target,
-            @NonNull FlowParameters flowParams) {
-        Intent intent = new Intent(
-                checkNotNull(context, "context cannot be null"),
+            @NonNull Context context, @NonNull Class<? extends Activity> target, @NonNull FlowParameters flowParams) {
+        Intent intent = new Intent(       checkNotNull(context, "context cannot be null"),
                 checkNotNull(target, "target activity cannot be null"))
                 .putExtra(ExtraConstants.FLOW_PARAMS,
                         checkNotNull(flowParams, "flowParams cannot be null"));
         intent.setExtrasClassLoader(AuthUI.class.getClassLoader());
+
         return intent;
     }
 

@@ -3,24 +3,18 @@ package com.firebase.ui.auth.data.remote;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.util.data.EmailLinkPersistenceManager;
 import com.firebase.ui.auth.data.model.IntentRequiredException;
 import com.firebase.ui.auth.data.model.PendingIntentRequiredException;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.data.model.UserCancellationException;
 import com.firebase.ui.auth.ui.email.EmailActivity;
-import com.firebase.ui.auth.ui.email.EmailLinkCatcherActivity;
 import com.firebase.ui.auth.ui.idp.AuthMethodPickerActivity;
 import com.firebase.ui.auth.ui.idp.SingleSignInActivity;
-import com.firebase.ui.auth.ui.phone.PhoneActivity;
-import com.firebase.ui.auth.util.ExtraConstants;
 import com.firebase.ui.auth.util.GoogleApiUtils;
 import com.firebase.ui.auth.util.data.ProviderUtils;
 import com.firebase.ui.auth.viewmodel.RequestCodes;
@@ -40,9 +34,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
 
 import java.util.ArrayList;
@@ -50,20 +42,12 @@ import java.util.List;
 
 import androidx.annotation.*;
 
-import static com.firebase.ui.auth.AuthUI.EMAIL_LINK_PROVIDER;
-
 public class SignInKickstarter extends SignInViewModelBase {
     public SignInKickstarter(Application application) {
         super(application);
     }
 
     public void start() {
-        if (!TextUtils.isEmpty(getArguments().emailLink)) {
-            setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                    EmailLinkCatcherActivity.createIntent(getApplication(), getArguments()),
-                    RequestCodes.EMAIL_FLOW)));
-            return;
-        }
 
         // Only support password credentials if email auth is enabled
         boolean supportPasswords = ProviderUtils.getConfigFromIdps(
@@ -110,26 +94,19 @@ public class SignInKickstarter extends SignInViewModelBase {
         if (!getArguments().shouldShowProviderChoice()) {
             AuthUI.IdpConfig firstIdpConfig = getArguments().providers.get(0);
             String firstProvider = firstIdpConfig.getProviderId();
-            switch (firstProvider) {
-                case EMAIL_LINK_PROVIDER:
-                case EmailAuthProvider.PROVIDER_ID:
-                    setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                            EmailActivity.createIntent(getApplication(), getArguments()),
-                            RequestCodes.EMAIL_FLOW)));
-                    break;
-                case PhoneAuthProvider.PROVIDER_ID:
-                    setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                            PhoneActivity.createIntent(
-                                    getApplication(), getArguments(), firstIdpConfig.getParams()),
-                            RequestCodes.PHONE_FLOW)));
-                    break;
-                default:
-                    redirectSignIn(firstProvider, null);
-                    break;
+
+            if (EmailAuthProvider.PROVIDER_ID.equals(firstProvider)) {
+
+                setResult(Resource.forFailure(new IntentRequiredException(
+                        EmailActivity.createIntent(getApplication(), getArguments()),
+                        RequestCodes.EMAIL_FLOW)));
+
+            } else {
+                redirectSignIn(firstProvider, null);
             }
         } else {
             setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                    AuthMethodPickerActivity.createIntent(getApplication(), getArguments()),
+                    AuthMethodPickerActivity.Companion.createIntent(getApplication(), getArguments()),
                     RequestCodes.AUTH_PICKER_FLOW)));
         }
     }
@@ -141,20 +118,9 @@ public class SignInKickstarter extends SignInViewModelBase {
                         EmailActivity.createIntent(getApplication(), getArguments(), id),
                         RequestCodes.EMAIL_FLOW)));
                 break;
-            case PhoneAuthProvider.PROVIDER_ID:
-                Bundle args = new Bundle();
-                args.putString(ExtraConstants.PHONE, id);
-                setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
-                        PhoneActivity.createIntent(
-                                getApplication(),
-                                getArguments(),
-                                args),
-                        RequestCodes.PHONE_FLOW)));
-                break;
             case GoogleAuthProvider.PROVIDER_ID:
             case FacebookAuthProvider.PROVIDER_ID:
             case TwitterAuthProvider.PROVIDER_ID:
-            case GithubAuthProvider.PROVIDER_ID:
                 setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
                         SingleSignInActivity.createIntent(
                                 getApplication(),
@@ -189,20 +155,12 @@ public class SignInKickstarter extends SignInViewModelBase {
                 break;
             case RequestCodes.EMAIL_FLOW:
             case RequestCodes.AUTH_PICKER_FLOW:
-            case RequestCodes.PHONE_FLOW:
             case RequestCodes.PROVIDER_FLOW:
-                if (resultCode == RequestCodes.EMAIL_LINK_WRONG_DEVICE_FLOW || resultCode == RequestCodes.EMAIL_LINK_INVALID_LINK_FLOW) {
-                    startAuthMethodChoice();
-                    return;
-                }
                 IdpResponse response = IdpResponse.fromResultIntent(data);
                 if (response == null) {
                     setResult(Resource.<IdpResponse>forFailure(new UserCancellationException()));
                 } else if (response.isSuccessful()) {
                     setResult(Resource.forSuccess(response));
-                } else if (response.getError().getErrorCode() ==
-                        ErrorCodes.ANONYMOUS_UPGRADE_MERGE_CONFLICT) {
-                    handleMergeFailure(response);
                 } else {
                     setResult(Resource.<IdpResponse>forFailure(response.getError()));
                 }

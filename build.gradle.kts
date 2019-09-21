@@ -1,8 +1,16 @@
 import com.android.build.gradle.BaseExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.konan.util.visibleName
 
 tasks.withType<Wrapper> {
     gradleVersion = Versions.gradleLatestVersion
     distributionType = Wrapper.DistributionType.ALL
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all{
+    kotlinOptions{
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 
 buildscript {
@@ -28,7 +36,7 @@ buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
     termsOfServiceAgree = "yes"
 
-    publishAlways()
+//    publishAlways()
 }
 
 subprojects { parent!!.path.takeIf { it != rootProject.path }?.let { evaluationDependsOn(it) } }
@@ -40,6 +48,7 @@ allprojects {
         mavenLocal()
     }
 }
+
 
 
 subprojects {
@@ -63,7 +72,14 @@ subprojects {
 
 //                resourcePrefix("fui_")
 //                vectorDrawables.useSupportLibrary = true
+
             }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_1_8
+                targetCompatibility= JavaVersion.VERSION_1_8
+            }
+
 
             lintOptions {
                 disable(
