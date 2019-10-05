@@ -14,7 +14,6 @@ import com.firebase.ui.auth.util.ui.FlowUtils;
 import androidx.annotation.*;
 import androidx.lifecycle.Observer;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public abstract class ResourceObserver<T> implements Observer<Resource<T>> {
 
     private final ProgressView mProgressView;

@@ -38,7 +38,6 @@ import androidx.lifecycle.ViewModelProviders;
 /**
  * Activity to initiate the "forgot password" flow by asking for the user's email.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class RecoverPasswordActivity extends AppCompatBase implements View.OnClickListener,
         ImeHelper.DonePressedListener {
     private RecoverPasswordHandler mHandler;
@@ -49,9 +48,8 @@ public class RecoverPasswordActivity extends AppCompatBase implements View.OnCli
     private EditText mEmailEditText;
     private EmailFieldValidator mEmailFieldValidator;
 
-    public static Intent createIntent(Context context, FlowParameters params, String email) {
-        return createBaseIntent(context, RecoverPasswordActivity.class, params)
-                .putExtra(ExtraConstants.EMAIL, email);
+    public static Intent createIntent(Context context, FlowParameters params) {
+        return createBaseIntent(context, RecoverPasswordActivity.class, params);
     }
 
     @Override

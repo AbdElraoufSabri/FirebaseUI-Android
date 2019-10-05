@@ -14,7 +14,6 @@ import androidx.annotation.*;
 /**
  * Utilities to help with Anonymous user upgrade.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class AuthOperationManager {
 
     private static String firebaseAppName = "FUIScratchApp";

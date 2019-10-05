@@ -5,7 +5,6 @@ import java.util.Random;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class SessionUtils {
 
     private static final String VALID_CHARS =

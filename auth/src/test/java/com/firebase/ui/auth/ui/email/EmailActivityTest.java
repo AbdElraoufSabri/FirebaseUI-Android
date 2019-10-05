@@ -18,10 +18,8 @@ import android.content.Intent;
 import com.google.android.material.textfield.TextInputLayout;
 import android.widget.Button;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.R;
-import com.firebase.ui.auth.util.data.EmailLinkPersistenceManager;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.testhelpers.TestConstants;
 import com.firebase.ui.auth.testhelpers.TestHelper;
@@ -59,56 +57,6 @@ public class EmailActivityTest {
         emailActivity.getSupportFragmentManager().findFragmentByTag(CheckEmailFragment.TAG);
     }
 
-    @Test
-    public void testOnCreate_emailLinkNormalFlow_expectCheckEmailFlowStarted() {
-        EmailActivity emailActivity = createActivity(AuthUI.EMAIL_LINK_PROVIDER);
-        emailActivity.getSupportFragmentManager().findFragmentByTag(CheckEmailFragment.TAG);
-    }
-
-    @Test
-    public void testOnCreate_emailLinkLinkingFlow_expectSendEmailLinkFlowStarted() {
-        // This is normally done by EmailLinkSendEmailHandler, saving the IdpResponse is done
-        // in EmailActivity but it will not be saved if we haven't previously set the email
-        EmailLinkPersistenceManager.getInstance().saveEmail(RuntimeEnvironment.application,
-                EMAIL, TestConstants.SESSION_ID, TestConstants.UID);
-
-        EmailActivity emailActivity = createActivity(AuthUI.EMAIL_LINK_PROVIDER, true);
-
-        EmailLinkFragment fragment = (EmailLinkFragment) emailActivity
-                .getSupportFragmentManager().findFragmentByTag(EmailLinkFragment.TAG);
-        assertThat(fragment).isNotNull();
-
-        EmailLinkPersistenceManager persistenceManager = EmailLinkPersistenceManager.getInstance();
-        IdpResponse response = persistenceManager.retrieveSessionRecord(
-                RuntimeEnvironment.application).getIdpResponseForLinking();
-
-        assertThat(response.getProviderType()).isEqualTo(GoogleAuthProvider.PROVIDER_ID);
-        assertThat(response.getEmail()).isEqualTo(EMAIL);
-        assertThat(response.getIdpToken()).isEqualTo(ID_TOKEN);
-        assertThat(response.getIdpSecret()).isEqualTo(SECRET);
-    }
-
-    // @Test TODO(lsirac): uncomment after figuring out why this no longer works
-    public void testOnTroubleSigningIn_expectTroubleSigningInFragment() {
-        EmailActivity emailActivity = createActivity(AuthUI.EMAIL_LINK_PROVIDER);
-
-        emailActivity.onTroubleSigningIn(EMAIL);
-
-        TroubleSigningInFragment fragment = (TroubleSigningInFragment) emailActivity
-                .getSupportFragmentManager().findFragmentByTag(TroubleSigningInFragment.TAG);
-        assertThat(fragment).isNotNull();
-    }
-
-    @Test
-    public void testOnClickResendEmail_expectSendEmailLinkFlowStarted() {
-        EmailActivity emailActivity = createActivity(AuthUI.EMAIL_LINK_PROVIDER);
-
-        emailActivity.onClickResendEmail(EMAIL);
-
-        EmailLinkFragment fragment = (EmailLinkFragment) emailActivity
-                .getSupportFragmentManager().findFragmentByTag(EmailLinkFragment.TAG);
-        assertThat(fragment).isNotNull();
-    }
 
 
     @Test
@@ -162,8 +110,8 @@ public class EmailActivityTest {
                 .get();
     }
 
-    private IdpResponse buildGoogleIdpResponse() {
-        return new IdpResponse.Builder(
+    private IdentityProviderResponse buildGoogleIdpResponse() {
+        return new IdentityProviderResponse.Builder(
                 new User.Builder(GoogleAuthProvider.PROVIDER_ID, EMAIL).build())
                 .setToken(ID_TOKEN)
                 .setSecret(SECRET)

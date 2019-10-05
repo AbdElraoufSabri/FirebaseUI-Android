@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.*;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.IntentRequiredException;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
@@ -30,15 +28,14 @@ import java.util.List;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class SocialProviderResponseHandler extends SignInViewModelBase {
     public SocialProviderResponseHandler(Application application) {
         super(application);
     }
 
-    public void startSignIn(@NonNull final IdpResponse response) {
+    public void startSignIn(@NonNull final IdentityProviderResponse response) {
         if (!response.isSuccessful()) {
-            setResult(Resource.<IdpResponse>forFailure(response.getError()));
+            setResult(Resource.<IdentityProviderResponse>forFailure(response.getError()));
             return;
         }
         if (!AuthUI.SOCIAL_PROVIDERS.contains(response.getProviderType())) {
@@ -46,7 +43,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
                     "This handler cannot be used with email or phone providers");
         }
 
-        setResult(Resource.<IdpResponse>forLoading());
+        setResult(Resource.<IdentityProviderResponse>forLoading());
 
         final AuthCredential credential = ProviderUtils.getAuthCredential(response);
 
@@ -66,7 +63,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
                         if (e instanceof FirebaseAuthUserCollisionException) {
                             final String email = response.getEmail();
                             if (email == null) {
-                                setResult(Resource.<IdpResponse>forFailure(e));
+                                setResult(Resource.<IdentityProviderResponse>forFailure(e));
                                 return;
                             }
                             // There can be a collision due to:
@@ -87,7 +84,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
 //                                                handleMergeFailure(credential);
 //                                            } else
                                                 if (providers.isEmpty()) {
-                                                setResult(Resource.<IdpResponse>forFailure(
+                                                setResult(Resource.<IdentityProviderResponse>forFailure(
                                                         new FirebaseUiException(
                                                                 ErrorCodes.DEVELOPER_ERROR,
                                                                 "No supported providers.")));
@@ -101,12 +98,12 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            setResult(Resource.<IdpResponse>forFailure(
+                                            setResult(Resource.<IdentityProviderResponse>forFailure(
                                                     e));
                                         }
                                     });
                         } else if (e instanceof FirebaseAuthInvalidUserException){
-                            setResult(Resource.<IdpResponse>forFailure(
+                            setResult(Resource.<IdentityProviderResponse>forFailure(
                                     new FirebaseUiException(
                                             ErrorCodes.ERROR_USER_DISABLED,
                                             ErrorCodes.toFriendlyMessage(
@@ -120,7 +117,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
                 });
     }
 
-    public void startWelcomeBackFlowForLinking(String provider, IdpResponse response) {
+    public void startWelcomeBackFlowForLinking(String provider, IdentityProviderResponse response) {
         if (provider == null) {
             throw new IllegalStateException(
                     "No provider even though we received a FirebaseAuthUserCollisionException");
@@ -128,7 +125,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
 
         if (provider.equals(EmailAuthProvider.PROVIDER_ID)) {
             // Start email welcome back flow
-            setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
+            setResult(Resource.<IdentityProviderResponse>forFailure(new IntentRequiredException(
                     WelcomeBackPasswordPrompt.Companion.createIntent(
                             getApplication(),
                             getArguments(),
@@ -137,7 +134,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
             )));
         } else {
             // Start Idp welcome back flow
-            setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
+            setResult(Resource.<IdentityProviderResponse>forFailure(new IntentRequiredException(
                     WelcomeBackIdpPrompt.createIntent(
                             getApplication(),
                             getArguments(),
@@ -150,7 +147,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == RequestCodes.ACCOUNT_LINK_FLOW) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
+            IdentityProviderResponse response = IdentityProviderResponse.fromResultIntent(data);
             if (resultCode == Activity.RESULT_OK) {
                 setResult(Resource.forSuccess(response));
             } else {
@@ -161,7 +158,7 @@ public class SocialProviderResponseHandler extends SignInViewModelBase {
                 } else {
                     e = response.getError();
                 }
-                setResult(Resource.<IdpResponse>forFailure(e));
+                setResult(Resource.<IdentityProviderResponse>forFailure(e));
             }
         }
     }

@@ -10,7 +10,6 @@ import androidx.annotation.RestrictTo;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
-import com.firebase.ui.auth.data.remote.GitHubSignInHandler;
 import com.firebase.ui.auth.ui.HelperActivityBase;
 import com.firebase.ui.auth.util.ExtraConstants;
 
@@ -38,7 +37,7 @@ import com.firebase.ui.auth.util.ExtraConstants;
  * event.
  */
 @SuppressLint("GoogleAppIndexingApiWarning")
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class GitHubLoginActivity extends HelperActivityBase {
     private static final String REFRESH_ACTION = "refresh_action";
     private static final String SHOULD_CLOSE_CCT_KEY = "should_close_cct_key";

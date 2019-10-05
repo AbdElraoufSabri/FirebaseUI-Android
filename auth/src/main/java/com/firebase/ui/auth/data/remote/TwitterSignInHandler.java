@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.R;
+import com.firebase.ui.auth.*;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.ui.HelperActivityBase;
@@ -28,7 +25,6 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class TwitterSignInHandler extends ProviderSignInBase<Void> {
     static {
         if (ProviderAvailability.IS_TWITTER_AVAILABLE) {
@@ -57,9 +53,9 @@ public class TwitterSignInHandler extends ProviderSignInBase<Void> {
         // against a future behavior change and gives a small efficiency gain.
     }
 
-    private static IdpResponse createIdpResponse(
+    private static IdentityProviderResponse createIdpResponse(
             TwitterSession session, String email, String name, Uri photoUri) {
-        return new IdpResponse.Builder(
+        return new IdentityProviderResponse.Builder(
                 new User.Builder(TwitterAuthProvider.PROVIDER_ID, email)
                         .setName(name)
                         .setPhotoUri(photoUri)
@@ -82,7 +78,7 @@ public class TwitterSignInHandler extends ProviderSignInBase<Void> {
     private class TwitterSessionResult extends Callback<TwitterSession> {
         @Override
         public void success(final Result<TwitterSession> sessionResult) {
-            setResult(Resource.<IdpResponse>forLoading());
+            setResult(Resource.<IdentityProviderResponse>forLoading());
             TwitterCore.getInstance()
                     .getApiClient()
                     .getAccountService()
@@ -100,7 +96,7 @@ public class TwitterSignInHandler extends ProviderSignInBase<Void> {
 
                         @Override
                         public void failure(TwitterException e) {
-                            setResult(Resource.<IdpResponse>forFailure(new FirebaseUiException(
+                            setResult(Resource.<IdentityProviderResponse>forFailure(new FirebaseUiException(
                                     ErrorCodes.PROVIDER_ERROR, e)));
                         }
                     });
@@ -108,7 +104,7 @@ public class TwitterSignInHandler extends ProviderSignInBase<Void> {
 
         @Override
         public void failure(TwitterException e) {
-            setResult(Resource.<IdpResponse>forFailure(new FirebaseUiException(
+            setResult(Resource.<IdentityProviderResponse>forFailure(new FirebaseUiException(
                     ErrorCodes.PROVIDER_ERROR, e)));
         }
     }

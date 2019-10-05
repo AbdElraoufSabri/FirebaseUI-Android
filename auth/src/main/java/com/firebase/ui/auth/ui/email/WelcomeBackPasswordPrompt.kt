@@ -22,11 +22,14 @@ import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-
-import com.firebase.ui.auth.IdpResponse
+import androidx.annotation.RestrictTo
+import androidx.annotation.StringRes
+import androidx.lifecycle.ViewModelProviders
+import com.firebase.ui.auth.IdentityProviderResponse
 import com.firebase.ui.auth.R
 import com.firebase.ui.auth.data.model.FlowParameters
 import com.firebase.ui.auth.ui.AppCompatBase
+import com.firebase.ui.auth.ui.HelperActivityBase
 import com.firebase.ui.auth.util.ExtraConstants
 import com.firebase.ui.auth.util.data.PrivacyDisclosureUtils
 import com.firebase.ui.auth.util.data.ProviderUtils
@@ -35,19 +38,14 @@ import com.firebase.ui.auth.util.ui.TextHelper
 import com.firebase.ui.auth.viewmodel.ResourceObserver
 import com.firebase.ui.auth.viewmodel.email.EmailSignInHandler
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-
-import androidx.annotation.*
-import androidx.lifecycle.ViewModelProviders
-import com.firebase.ui.auth.ui.HelperActivityBase
 import kotlinx.android.synthetic.main.fui_welcome_back_password_prompt_layout.*
 
 /**
  * Activity to link a pre-existing email/password account to a new IDP sign-in by confirming the
  * password before initiating a link.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class WelcomeBackPasswordPrompt : AppCompatBase(), View.OnClickListener, ImeHelper.DonePressedListener {
-    private lateinit var mIdpResponse: IdpResponse
+    private lateinit var mIdentityProviderResponse: IdentityProviderResponse
     private lateinit var mHandler: EmailSignInHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,8 +55,8 @@ class WelcomeBackPasswordPrompt : AppCompatBase(), View.OnClickListener, ImeHelp
         // Show keyboard
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
-        mIdpResponse = IdpResponse.fromResultIntent(intent)!!
-        val email = mIdpResponse.email
+        mIdentityProviderResponse = IdentityProviderResponse.fromResultIntent(intent)!!
+        val email = mIdentityProviderResponse.email
 
         ImeHelper.setImeOnDoneListener(password, this)
 
@@ -80,15 +78,14 @@ class WelcomeBackPasswordPrompt : AppCompatBase(), View.OnClickListener, ImeHelp
         mHandler.init(flowParams)
 
         // Observe the state of the main auth operation
-        mHandler.operation.observe(this, object : ResourceObserver<IdpResponse>(
+        mHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(
                 this, R.string.fui_progress_dialog_signing_in) {
-            override fun onSuccess(response: IdpResponse) {
-                startSaveCredentials(
-                        mHandler.currentUser, response, mHandler.pendingPassword)
+            override fun onSuccess(response: IdentityProviderResponse) {
+                startSaveCredentials(mHandler.currentUser, response, mHandler.pendingPassword)
             }
 
             override fun onFailure(e: Exception) {
-                    password_layout.error = getString(getErrorMessage(e))
+                password_layout.error = getString(getErrorMessage(e))
             }
         })
 
@@ -107,8 +104,7 @@ class WelcomeBackPasswordPrompt : AppCompatBase(), View.OnClickListener, ImeHelp
     private fun onForgotPasswordClicked() {
         startActivity(RecoverPasswordActivity.createIntent(
                 this,
-                flowParams,
-                mIdpResponse.email))
+                flowParams))
     }
 
     override fun onDonePressed() {
@@ -124,8 +120,8 @@ class WelcomeBackPasswordPrompt : AppCompatBase(), View.OnClickListener, ImeHelp
             password_layout.error = null
         }
 
-        val authCredential = ProviderUtils.getAuthCredential(mIdpResponse)
-        mHandler.startSignIn(mIdpResponse.email!!, password, mIdpResponse, authCredential)
+        val authCredential = ProviderUtils.getAuthCredential(mIdentityProviderResponse)
+        mHandler.startSignIn(mIdentityProviderResponse.email!!, password, mIdentityProviderResponse, authCredential)
     }
 
     override fun onClick(view: View) {
@@ -149,7 +145,9 @@ class WelcomeBackPasswordPrompt : AppCompatBase(), View.OnClickListener, ImeHelp
 
     companion object {
 
-        fun createIntent(context: Context, flowParams: FlowParameters, response: IdpResponse): Intent {
+        fun createIntent(context: Context,
+                         flowParams: FlowParameters,
+                         response: IdentityProviderResponse): Intent {
             return HelperActivityBase.createBaseIntent(context, WelcomeBackPasswordPrompt::class.java, flowParams)
                     .putExtra(ExtraConstants.IDP_RESPONSE, response)
         }

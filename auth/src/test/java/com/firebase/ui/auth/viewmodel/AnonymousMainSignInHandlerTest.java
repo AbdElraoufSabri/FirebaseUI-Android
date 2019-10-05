@@ -2,7 +2,7 @@ package com.firebase.ui.auth.viewmodel;
 
 import androidx.lifecycle.Observer;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.State;
@@ -36,12 +36,12 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link AnonymousSignInHandler}.
  */
 @RunWith(RobolectricTestRunner.class)
-public class AnonymousSignInHandlerTest {
+public class AnonymousMainSignInHandlerTest {
 
     @Mock FirebaseAuth mMockAuth;
     AnonymousSignInHandler mHandler;
 
-    @Mock Observer<Resource<IdpResponse>> mResponseObserver;
+    @Mock Observer<Resource<IdentityProviderResponse>> mResponseObserver;
 
     @Before
     public void setUp() {
@@ -67,13 +67,13 @@ public class AnonymousSignInHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> captor = ArgumentCaptor.forClass(Resource.class);
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor = ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         assertThat(captor.getValue().getState()).isEqualTo(State.SUCCESS);
-        IdpResponse response = captor.getValue().getValue();
+        IdentityProviderResponse response = captor.getValue().getValue();
         assertThat(response.isNewUser()).isFalse();
     }
 
@@ -90,9 +90,9 @@ public class AnonymousSignInHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isFailure()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isFailure()));
 
     }
 }

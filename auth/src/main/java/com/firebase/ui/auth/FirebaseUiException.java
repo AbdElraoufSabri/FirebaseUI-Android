@@ -9,23 +9,23 @@ import androidx.annotation.*;
 public class FirebaseUiException extends Exception {
     private final int mErrorCode;
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    
     public FirebaseUiException(@ErrorCodes.Code int code) {
         this(code, ErrorCodes.toFriendlyMessage(code));
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    
     public FirebaseUiException(@ErrorCodes.Code int code, @NonNull String message) {
         super(message);
         mErrorCode = code;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    
     public FirebaseUiException(@ErrorCodes.Code int code, @NonNull Throwable cause) {
         this(code, ErrorCodes.toFriendlyMessage(code), cause);
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    
     public FirebaseUiException(@ErrorCodes.Code int code,
                                @NonNull String message,
                                @NonNull Throwable cause) {

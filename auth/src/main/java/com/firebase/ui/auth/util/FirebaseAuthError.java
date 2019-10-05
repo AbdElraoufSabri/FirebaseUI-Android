@@ -11,7 +11,7 @@ import androidx.annotation.RestrictTo;
  * This is a temporary band-aid until we have better documentation and exposure for these
  * error codes in the real Firebase Auth SDK.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public enum FirebaseAuthError {
 
     ERROR_INVALID_CUSTOM_TOKEN("The custom token format is incorrect. Please check the documentation."),

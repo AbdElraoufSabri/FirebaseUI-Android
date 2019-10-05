@@ -6,7 +6,6 @@ import androidx.annotation.RestrictTo;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public abstract class OperableViewModel<I, O> extends ViewModelBase<I> {
     private MutableLiveData<O> mOperation = new MutableLiveData<>();
 

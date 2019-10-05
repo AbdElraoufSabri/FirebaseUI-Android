@@ -3,7 +3,7 @@ package com.firebase.ui.auth.viewmodel;
 import androidx.lifecycle.Observer;
 
 import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
@@ -58,7 +58,7 @@ public class LinkingSocialProviderResponseHandlerTest {
     @Mock FirebaseAuth mScratchMockAuth;
 
     @Mock FirebaseUser mMockUser;
-    @Mock Observer<Resource<IdpResponse>> mResponseObserver;
+    @Mock Observer<Resource<IdentityProviderResponse>> mResponseObserver;
 
     private LinkingSocialProviderResponseHandler mHandler;
 
@@ -79,7 +79,7 @@ public class LinkingSocialProviderResponseHandlerTest {
         mHandler.getOperation().observeForever(mResponseObserver);
 
         // Fake social response from Google
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -93,9 +93,9 @@ public class LinkingSocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
 
@@ -105,7 +105,7 @@ public class LinkingSocialProviderResponseHandlerTest {
         setupAnonymousUpgrade();
 
         // Fake social response from Google
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -119,9 +119,9 @@ public class LinkingSocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResponseObserver).onChanged(resolveCaptor.capture());
 
@@ -144,7 +144,7 @@ public class LinkingSocialProviderResponseHandlerTest {
         // to an existing account with a Google provider.
 
         // Fake social response from Google
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -173,9 +173,9 @@ public class LinkingSocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class LinkingSocialProviderResponseHandlerTest {
         // Before we can link, they need to sign in with Google to prove they own the account.
 
         // Fake social response from Google
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -217,9 +217,9 @@ public class LinkingSocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResponseObserver).onChanged(resolveCaptor.capture());
 

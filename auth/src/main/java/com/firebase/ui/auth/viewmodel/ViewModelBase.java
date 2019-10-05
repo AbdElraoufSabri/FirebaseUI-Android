@@ -7,7 +7,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.RestrictTo;
 import androidx.lifecycle.AndroidViewModel;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public abstract class ViewModelBase<T> extends AndroidViewModel {
     private final AtomicBoolean mIsInitialized = new AtomicBoolean();
 

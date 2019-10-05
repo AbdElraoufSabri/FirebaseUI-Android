@@ -26,10 +26,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.AuthUI.IdpConfig
+import com.firebase.ui.auth.AuthUI.IdentityProviderConfig
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.FirebaseUiException
-import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.auth.IdentityProviderResponse
 import com.firebase.ui.auth.R
 import com.firebase.ui.auth.data.model.FlowParameters
 import com.firebase.ui.auth.data.model.User
@@ -40,7 +40,10 @@ import com.firebase.ui.auth.data.remote.TwitterSignInHandler
 import com.firebase.ui.auth.ui.AppCompatBase
 import com.firebase.ui.auth.ui.HelperActivityBase
 import com.firebase.ui.auth.ui.email.AuthenticationButtonsListener
+import com.firebase.ui.auth.ui.email.RecoverPasswordActivity
 import com.firebase.ui.auth.ui.email.SignInFragment
+import com.firebase.ui.auth.ui.email.SignUpFragment
+import com.firebase.ui.auth.util.ExtraConstants
 import com.firebase.ui.auth.util.data.ProviderUtils
 import com.firebase.ui.auth.viewmodel.ProviderSignInBase
 import com.firebase.ui.auth.viewmodel.ResourceObserver
@@ -59,15 +62,16 @@ import java.util.ArrayList
 /**
  * Presents the list of authentication options for this app to the user.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListener, AuthenticationButtonsListener {
 
+    private lateinit var mIdpUser: User
     private lateinit var mSocialHandler: SocialProviderResponseHandler
     private lateinit var mSocialLinkingHandler: LinkingSocialProviderResponseHandler
     private lateinit var mEmailHandler: EmailSignInHandler
 
     private lateinit var mSocialProviders: MutableList<ProviderSignInBase<*>>
     private lateinit var mSignInFragment: SignInFragment
+    private lateinit var mSignUpFragment: SignUpFragment
 
     private lateinit var mSupplier: ViewModelProvider
 
@@ -82,9 +86,10 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
         mSocialLinkingHandler.init(flowParams)
 
         mEmailHandler = mSupplier.get(EmailSignInHandler::class.java)
-        mEmailHandler.init(flowParams)
 
         mSignInFragment = SignInFragment()
+        mSignUpFragment = SignUpFragment()
+
         switchFragment(mSignInFragment, R.id.auth_fragment, SignInFragment.TAG)
 
         mSocialProviders = ArrayList()
@@ -93,9 +98,9 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
 
         populateIdpList(flowParams.providers)
 
-        mSocialHandler.operation.observe(this, object : ResourceObserver<IdpResponse>(
+        mSocialHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(
                 this, R.string.fui_progress_dialog_signing_in) {
-            override fun onSuccess(response: IdpResponse) {
+            override fun onSuccess(response: IdentityProviderResponse) {
                 startSaveCredentials(mSocialHandler.currentUser, response, null)
             }
 
@@ -111,6 +116,7 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
                 }
             }
         })
+
     }
 
     /*
@@ -124,7 +130,7 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
     //    }
      */
 
-    private fun populateIdpList(providerConfigs: List<IdpConfig>) {
+    private fun populateIdpList(providerConfigs: List<IdentityProviderConfig>) {
 
         mSocialProviders = ArrayList()
 
@@ -158,45 +164,38 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
 
     private fun handleEmailSignInOperation() {
 
-        mEmailHandler.operation.observe(this, object : ResourceObserver<IdpResponse>(this) {
-            override fun onSuccess(response: IdpResponse) {
-                handleResponse(response)
+        mEmailHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(this, R.string.fui_progress_dialog_signing_in) {
+            override fun onSuccess(response: IdentityProviderResponse) {
+                startSaveCredentials(mEmailHandler.currentUser, response, mEmailHandler.pendingPassword)
             }
 
             override fun onFailure(e: Exception) {
-                handleResponse(IdpResponse.from(e))
-            }
-
-            private fun handleResponse(response: IdpResponse) {
-                val responseStatus =
-                        if (response.isSuccessful) "Successful"
-//                            Activity.RESULT_OK
-                        else
-                            "Insuccessful"
-//                            Activity.RESULT_CANCELED
-
-                Snackbar.make(auth_fragment, "Email login : $responseStatus", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("ok") {}
-                        .apply { view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).maxLines = 10 }
-                        .show()
+                snackbarShow("Email login : error\n" + e.message)
             }
 
         })
     }
 
-    private fun handleSocialProviderSignInOperation(idpConfig: IdpConfig, view: View) {
-        val providerId = idpConfig.providerId
+    private fun snackbarShow(message: String) {
+        Snackbar.make(auth_fragment, message, Snackbar.LENGTH_INDEFINITE)
+                .setAction("ok") {}
+                .apply { view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).maxLines = 10 }
+                .show()
+    }
+
+    private fun handleSocialProviderSignInOperation(identityProviderConfig: IdentityProviderConfig, view: View) {
+        val providerId = identityProviderConfig.providerId
         val provider: ProviderSignInBase<*>
 
         when (providerId) {
             GoogleAuthProvider.PROVIDER_ID -> {
                 val google = mSupplier.get(GoogleSignInHandler::class.java)
-                google.init(GoogleSignInHandler.Params(idpConfig))
+                google.init(GoogleSignInHandler.Params(identityProviderConfig))
                 provider = google
             }
             FacebookAuthProvider.PROVIDER_ID -> {
                 val facebook = mSupplier.get(FacebookSignInHandler::class.java)
-                facebook.init(idpConfig)
+                facebook.init(identityProviderConfig)
                 provider = facebook
             }
             TwitterAuthProvider.PROVIDER_ID -> {
@@ -208,16 +207,16 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
         }
         mSocialProviders.add(provider)
 
-        provider.operation.observe(this, object : ResourceObserver<IdpResponse>(this) {
-            override fun onSuccess(response: IdpResponse) {
+        provider.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(this) {
+            override fun onSuccess(response: IdentityProviderResponse) {
                 handleResponse(response)
             }
 
             override fun onFailure(e: Exception) {
-                handleResponse(IdpResponse.from(e))
+                handleResponse(IdentityProviderResponse.from(e))
             }
 
-            private fun handleResponse(response: IdpResponse) {
+            private fun handleResponse(response: IdentityProviderResponse) {
                 if (!response.isSuccessful) {
                     // We have no idea what provider this error stemmed from so just forward
                     // this along to the handler.
@@ -282,7 +281,6 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
     }
 
     override fun onExistingEmailUser(user: User, password: String) {
-
         if (isOffline) {
             Toast.makeText(this,
                     getString(R.string.fui_no_internet),
@@ -290,12 +288,16 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
             return
         }
 
-        val response = IdpResponse.Builder(user).build()
+        val response = IdentityProviderResponse.Builder(user).build()
+        mEmailHandler.init(flowParams)
 
-
+        val authCredential = ProviderUtils.getAuthCredential(response)
+        mEmailHandler.startSignIn(response.email!!, password, response, authCredential)
     }
 
     override fun onExistingIdpUser(user: User) {
+        mIdpUser = user;
+
         // Existing social user, direct them to sign in using their chosen provider.
         if (isOffline) {
             Toast.makeText(this,
@@ -303,10 +305,6 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
                     Toast.LENGTH_SHORT).show()
             return
         }
-
-        val response = IdpResponse.Builder(user).build()
-        val credential = ProviderUtils.getAuthCredential(response)
-        mSocialLinkingHandler.setRequestedSignInCredentialForEmail(credential, user.email)
 
         val providerId = user.providerId
         val config = ProviderUtils.getConfigFromIdps(flowParams.providers, providerId)
@@ -338,40 +336,48 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
             else -> throw IllegalStateException("Invalid provider id: $providerId")
         }
 
-        provider.operation.observe(this, object : ResourceObserver<IdpResponse>(this) {
-            override fun onSuccess(response: IdpResponse) {
+        provider.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(this) {
+            override fun onSuccess(response: IdentityProviderResponse) {
                 mSocialLinkingHandler.startSignIn(response)
             }
 
-            override fun onFailure(e: java.lang.Exception) {
-                mSocialLinkingHandler.startSignIn(IdpResponse.from(e))
+            override fun onFailure(e: Exception) {
+                mSocialLinkingHandler.startSignIn(IdentityProviderResponse.from(e))
             }
         })
 
+        mSocialLinkingHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(this) {
+            override fun onSuccess(response: IdentityProviderResponse) {
+                snackbarShow("Idp : $providerId Success")
+            }
+
+            override fun onFailure(e: java.lang.Exception) {
+                snackbarShow("Idp signin : $providerId cancelled")
+            }
+        })
     }
 
     override fun onNewUser(user: User) {
         // TODO switch to sign up fragment
+        // New user, direct them to create an account with email/password
+        // if account creation is enabled in SignInIntentBuilder
+        mSignUpFragment = SignUpFragment.newInstance(user)
         switchToSignUp()
-
-
-    }
-
-    override fun signUpClicked(email: String, password: String) {
-        if (isOffline) {
-            Toast.makeText(this,
-                    getString(R.string.fui_no_internet),
-                    Toast.LENGTH_SHORT).show()
-            return
-        }
     }
 
     override fun switchToSignIn() {
-        TODO("not implemented")
+        switchFragment(mSignInFragment, R.id.auth_fragment, SignInFragment.TAG)
     }
 
     override fun switchToSignUp() {
-        TODO("not implemented")
+        switchFragment(mSignUpFragment, R.id.auth_fragment, SignInFragment.TAG)
+    }
+
+    override fun forgotPasswordClicked() {
+
+        startActivity(RecoverPasswordActivity.createIntent(
+                this,
+                flowParams))
     }
 
     override fun onDeveloperFailure(e: Exception) {
@@ -379,13 +385,18 @@ class AuthMethodPickerActivity : AppCompatBase(), SignInFragment.CheckEmailListe
     }
 
     private fun finishOnDeveloperError(e: Exception) {
-        finish(Activity.RESULT_CANCELED, IdpResponse.getErrorIntent(FirebaseUiException(ErrorCodes.DEVELOPER_ERROR, e.message!!)))
+        finish(Activity.RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(FirebaseUiException(ErrorCodes.DEVELOPER_ERROR, e.message!!)))
     }
 
     companion object {
 
         fun createIntent(context: Context, flowParams: FlowParameters): Intent {
             return HelperActivityBase.createBaseIntent(context, AuthMethodPickerActivity::class.java, flowParams)
+        }
+
+        fun createIntent(context: Context, flowParams: FlowParameters, email: String): Intent {
+            return createIntent(context, flowParams)
+                    .putExtra(ExtraConstants.EMAIL, email);
         }
     }
 }

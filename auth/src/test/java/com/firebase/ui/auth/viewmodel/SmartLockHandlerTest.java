@@ -3,7 +3,7 @@ package com.firebase.ui.auth.viewmodel;
 import android.app.Activity;
 import androidx.lifecycle.Observer;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.PendingIntentRequiredException;
 import com.firebase.ui.auth.data.model.Resource;
@@ -46,7 +46,7 @@ public class SmartLockHandlerTest {
 
     @Mock FirebaseAuth mMockAuth;
     @Mock CredentialsClient mMockCredentials;
-    @Mock Observer<Resource<IdpResponse>> mResultObserver;
+    @Mock Observer<Resource<IdentityProviderResponse>> mResultObserver;
 
     private SmartLockHandler mHandler;
 
@@ -61,7 +61,7 @@ public class SmartLockHandlerTest {
                 EmailAuthProvider.PROVIDER_ID));
 
         mHandler.initializeForTesting(testParams, mMockAuth, mMockCredentials, null);
-        mHandler.setResponse(new IdpResponse.Builder(
+        mHandler.setResponse(new IdentityProviderResponse.Builder(
                 new User.Builder(EmailAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build()
         ).build());
     }
@@ -75,8 +75,8 @@ public class SmartLockHandlerTest {
 
         mHandler.saveCredentials(TestHelper.getMockFirebaseUser(), TestConstants.PASSWORD, null);
 
-        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
-        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
+        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test
@@ -94,10 +94,10 @@ public class SmartLockHandlerTest {
         InOrder inOrder = inOrder(mResultObserver);
 
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
         // Make sure we get a resolution
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResultObserver).onChanged(resolveCaptor.capture());
 
@@ -108,7 +108,7 @@ public class SmartLockHandlerTest {
 
         // Make sure we get success
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test
@@ -120,8 +120,8 @@ public class SmartLockHandlerTest {
 
         mHandler.saveCredentials(TestHelper.getMockFirebaseUser(), TestConstants.PASSWORD, null);
 
-        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
-        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isFailure()));
+        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
+        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isFailure()));
     }
 
 }

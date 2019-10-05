@@ -263,9 +263,9 @@
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-        <item name="boxStrokeColor">@color/fui_text_input_box_stroke</item>
-    </style>
+<!--    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">-->
+<!--        <item name="boxStrokeColor">@color/fui_text_input_box_stroke</item>-->
+<!--    </style>-->
 
     <style name="error" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/colorAccent</item>

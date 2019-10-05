@@ -1,5 +1,5 @@
 rootProject.buildFileName = 'build.gradle.kts'
 
 include(
-        ":app",   ":auth", ":auth-github","buildSrc"
+        ":app",   ":auth","buildSrc"
 )

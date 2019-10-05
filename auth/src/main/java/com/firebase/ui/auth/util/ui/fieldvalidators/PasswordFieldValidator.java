@@ -20,7 +20,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class PasswordFieldValidator extends BaseValidator {
     private int mMinLength;
 

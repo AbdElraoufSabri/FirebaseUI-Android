@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class PhoneNumber {
     private static final PhoneNumber EMPTY_PHONE_NUMBER = new PhoneNumber("", "", "");
 

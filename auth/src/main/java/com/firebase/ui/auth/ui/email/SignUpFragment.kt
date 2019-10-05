@@ -1,5 +1,6 @@
 package com.firebase.ui.auth.ui.email
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.ViewModelProviders
 import com.afollestad.vvalidator.form
-import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.auth.IdentityProviderResponse
 import com.firebase.ui.auth.R
 import com.firebase.ui.auth.data.model.User
 import com.firebase.ui.auth.ui.FragmentBase
@@ -28,7 +29,6 @@ import kotlinx.android.synthetic.main.fui_sign_up_layout.view.*
 /**
  * Fragment to display an email/name/password sign up form for new users.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class SignUpFragment() : FragmentBase() {
 
     companion object {
@@ -50,17 +50,13 @@ class SignUpFragment() : FragmentBase() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            mUser = User.getUser(arguments)
-        } else {
-            mUser = User.getUser(savedInstanceState)
-        }
+        mUser = if (savedInstanceState == null) User.getUser(arguments) else User.getUser(savedInstanceState)
 
         mHandler = ViewModelProviders.of(this).get(EmailProviderResponseHandler::class.java)
         mHandler.init(flowParams)
-        mHandler.operation.observe(this, object : ResourceObserver<IdpResponse>(
+        mHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(
                 this, R.string.fui_progress_dialog_signing_up) {
-            override fun onSuccess(response: IdpResponse) {
+            override fun onSuccess(response: IdentityProviderResponse) {
                 startSaveCredentials(
                         mHandler.currentUser,
                         response,
@@ -80,6 +76,7 @@ class SignUpFragment() : FragmentBase() {
 
 
     }
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -153,7 +150,7 @@ class SignUpFragment() : FragmentBase() {
                 val email = emailEditText.text.toString()
                 val password = passwordEditText.text.toString()
 
-                mHandler.startSignIn(IdpResponse.Builder(
+                mHandler.startSignIn(IdentityProviderResponse.Builder(
                         User.Builder(EmailAuthProvider.PROVIDER_ID, email)
                                 .setPhotoUri(mUser.photoUri)
                                 .build())
@@ -162,13 +159,19 @@ class SignUpFragment() : FragmentBase() {
             }
         }
 
+//        val emailConfig = ProviderUtils.getConfigFromIdpsOrThrow(flowParams.providers, EmailAuthProvider.PROVIDER_ID)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && flowParams.enableCredentials) {
+            view.emailEditText.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
+        }
 
+        val email = mUser.email
+        if(email?.isNotEmpty()!!) view.emailEditText.setText(email)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val activity = activity
+        val activity = requireActivity()
         check(activity is AuthenticationButtonsListener) { "Activity must implement AuthenticationButtonsListener" }
 
         mAuthenticationButtonsListener = activity
@@ -177,9 +180,13 @@ class SignUpFragment() : FragmentBase() {
             return
         }
 
-        if (flowParams.enableHints) {
-            signUpButton.performClick()
-        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(ExtraConstants.USER,
+                User.Builder(EmailAuthProvider.PROVIDER_ID, emailEditText.text.toString())
+                        .setPhotoUri(mUser.photoUri)
+                        .build())
     }
 
 

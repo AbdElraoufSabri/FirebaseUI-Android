@@ -11,7 +11,6 @@ import androidx.annotation.RestrictTo;
  * Represents an error in which the phone number couldn't be automatically verified and must
  * therefore be manually verified by the client by sending an SMS code.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class PhoneNumberVerificationRequiredException extends FirebaseUiException {
     private final String mPhoneNumber;
 

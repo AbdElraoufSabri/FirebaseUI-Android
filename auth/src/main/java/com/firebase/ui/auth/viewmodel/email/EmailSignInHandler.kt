@@ -1,12 +1,10 @@
 package com.firebase.ui.auth.viewmodel.email
 
 import android.app.Application
-import androidx.annotation.RestrictTo
-import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.auth.IdentityProviderResponse
 import com.firebase.ui.auth.data.model.Resource
 import com.firebase.ui.auth.data.model.User
 import com.firebase.ui.auth.data.remote.ProfileMerger
-import com.firebase.ui.auth.util.data.AuthOperationManager
 import com.firebase.ui.auth.util.data.TaskFailureLogger
 import com.firebase.ui.auth.viewmodel.SignInViewModelBase
 import com.google.android.gms.tasks.Tasks
@@ -18,13 +16,13 @@ import com.google.firebase.auth.EmailAuthProvider
  * signing in with email and password, linking other credentials, and saving credentials to
  * SmartLock.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 class EmailSignInHandler(application: Application) : SignInViewModelBase(application) {
 
     /**
      * Get the most recent pending password.
      */
-    var pendingPassword: String? = null
+    lateinit var pendingPassword: String
         private set
 
     /**
@@ -32,7 +30,7 @@ class EmailSignInHandler(application: Application) : SignInViewModelBase(applica
      */
     fun startSignIn(email: String,
                     password: String,
-                    inputResponse: IdpResponse,
+                    inputResponse: IdentityProviderResponse,
                     credential: AuthCredential?) {
 
         setResult(Resource.forLoading())
@@ -41,15 +39,15 @@ class EmailSignInHandler(application: Application) : SignInViewModelBase(applica
         pendingPassword = password
 
         // Build appropriate IDP response based on inputs
-        val outputResponse: IdpResponse =
+        val outputResponse: IdentityProviderResponse =
                 if (credential == null) {
                     // New credential for the email provider
-                    IdpResponse.Builder(
+                    IdentityProviderResponse.Builder(
                             User.Builder(EmailAuthProvider.PROVIDER_ID, email).build())
                             .build()
                 } else {
                     // New credential for an IDP (Social)
-                    IdpResponse.Builder(inputResponse.user)
+                    IdentityProviderResponse.Builder(inputResponse.user)
                             .setToken(inputResponse.idpToken)
                             .setSecret(inputResponse.idpSecret)
                             .build()

@@ -7,7 +7,7 @@ import com.firebase.ui.auth.FirebaseUiException;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class IntentRequiredException extends FirebaseUiException {
     private final Intent mIntent;
     private final int mRequestCode;

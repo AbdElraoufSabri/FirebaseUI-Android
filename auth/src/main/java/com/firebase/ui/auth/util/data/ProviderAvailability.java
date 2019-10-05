@@ -3,7 +3,6 @@ package com.firebase.ui.auth.util.data;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class ProviderAvailability {
     public static final boolean IS_GITHUB_AVAILABLE =
             exists("com.firebase.ui.auth.data.remote.GitHubSignInHandler");

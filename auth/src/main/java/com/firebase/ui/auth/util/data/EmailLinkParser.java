@@ -11,7 +11,7 @@ import java.util.Set;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class EmailLinkParser {
 
     private static String LINK = "link";

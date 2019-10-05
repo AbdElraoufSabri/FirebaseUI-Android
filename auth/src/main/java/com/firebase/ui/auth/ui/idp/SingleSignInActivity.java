@@ -1,33 +1,21 @@
 package com.firebase.ui.auth.ui.idp;
 
-import android.content.Context;
-import android.content.Intent;
+import android.content.*;
 import android.os.Bundle;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.data.model.FlowParameters;
-import com.firebase.ui.auth.data.model.User;
-import com.firebase.ui.auth.data.remote.FacebookSignInHandler;
-import com.firebase.ui.auth.data.remote.GoogleSignInHandler;
-import com.firebase.ui.auth.data.remote.TwitterSignInHandler;
+import com.firebase.ui.auth.*;
+import com.firebase.ui.auth.data.model.*;
+import com.firebase.ui.auth.data.remote.*;
 import com.firebase.ui.auth.ui.InvisibleActivityBase;
 import com.firebase.ui.auth.util.ExtraConstants;
 import com.firebase.ui.auth.util.data.ProviderUtils;
-import com.firebase.ui.auth.viewmodel.ProviderSignInBase;
-import com.firebase.ui.auth.viewmodel.ResourceObserver;
+import com.firebase.ui.auth.viewmodel.*;
 import com.firebase.ui.auth.viewmodel.idp.SocialProviderResponseHandler;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.GithubAuthProvider;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.*;
 
 import androidx.annotation.*;
 import androidx.lifecycle.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class SingleSignInActivity extends InvisibleActivityBase {
     private SocialProviderResponseHandler mHandler;
     private ProviderSignInBase<?> mProvider;
@@ -43,10 +31,10 @@ public class SingleSignInActivity extends InvisibleActivityBase {
         User user = User.getUser(getIntent());
         String provider = user.getProviderId();
 
-        AuthUI.IdpConfig providerConfig =
+        AuthUI.IdentityProviderConfig providerConfig =
                 ProviderUtils.getConfigFromIdps(getFlowParams().providers, provider);
         if (providerConfig == null) {
-            finish(RESULT_CANCELED, IdpResponse.getErrorIntent(new FirebaseUiException(
+            finish(RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(new FirebaseUiException(
                     ErrorCodes.DEVELOPER_ERROR,
                     "Provider not enabled: " + provider)));
             return;
@@ -77,27 +65,27 @@ public class SingleSignInActivity extends InvisibleActivityBase {
                 throw new IllegalStateException("Invalid provider id: " + provider);
         }
 
-        mProvider.getOperation().observe(this, new ResourceObserver<IdpResponse>(this) {
+        mProvider.getOperation().observe(this, new ResourceObserver<IdentityProviderResponse>(this) {
             @Override
-            protected void onSuccess(@NonNull IdpResponse response) {
+            protected void onSuccess(@NonNull IdentityProviderResponse response) {
                 mHandler.startSignIn(response);
             }
 
             @Override
             protected void onFailure(@NonNull Exception e) {
-                mHandler.startSignIn(IdpResponse.from(e));
+                mHandler.startSignIn(IdentityProviderResponse.from(e));
             }
         });
 
-        mHandler.getOperation().observe(this, new ResourceObserver<IdpResponse>(this) {
+        mHandler.getOperation().observe(this, new ResourceObserver<IdentityProviderResponse>(this) {
             @Override
-            protected void onSuccess(@NonNull IdpResponse response) {
+            protected void onSuccess(@NonNull IdentityProviderResponse response) {
                 startSaveCredentials(mHandler.getCurrentUser(), response, null);
             }
 
             @Override
             protected void onFailure(@NonNull Exception e) {
-                    finish(RESULT_CANCELED, IdpResponse.getErrorIntent(e));
+                finish(RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(e));
             }
         });
 

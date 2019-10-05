@@ -7,7 +7,6 @@ import com.firebase.ui.auth.FirebaseUiException;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class PendingIntentRequiredException extends FirebaseUiException {
     private final PendingIntent mPendingIntent;
     private final int mRequestCode;

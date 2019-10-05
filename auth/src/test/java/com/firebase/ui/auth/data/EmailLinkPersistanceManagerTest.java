@@ -2,7 +2,7 @@ package com.firebase.ui.auth.data;
 
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.testhelpers.TestConstants;
 import com.firebase.ui.auth.util.data.EmailLinkPersistenceManager;
@@ -43,7 +43,7 @@ public class EmailLinkPersistanceManagerTest {
 
     @Test
     public void testSaveAndRetrieveIdpResonseForLinking_saveEmailFirst() {
-        IdpResponse response = buildIdpResponse();
+        IdentityProviderResponse response = buildIdpResponse();
 
         mPersistenceManager.saveEmail(RuntimeEnvironment.application, TestConstants.EMAIL,
                 TestConstants.SESSION_ID, TestConstants.UID);
@@ -55,12 +55,12 @@ public class EmailLinkPersistanceManagerTest {
         assertThat(sessionRecord.getEmail()).isEqualTo(TestConstants.EMAIL);
         assertThat(sessionRecord.getSessionId()).isEqualTo(TestConstants.SESSION_ID);
         assertThat(sessionRecord.getAnonymousUserId()).isEqualTo(TestConstants.UID);
-        assertThat(sessionRecord.getIdpResponseForLinking()).isEqualTo(response);
+        assertThat(sessionRecord.getIdentityProviderResponseForLinking()).isEqualTo(response);
     }
 
     @Test
     public void testSaveAndRetrieveIdpResonseForLinking_noSavedEmail_expectNothingSaved() {
-        IdpResponse response = buildIdpResponse();
+        IdentityProviderResponse response = buildIdpResponse();
 
         mPersistenceManager.saveIdpResponseForLinking(RuntimeEnvironment.application, response);
 
@@ -70,11 +70,11 @@ public class EmailLinkPersistanceManagerTest {
         assertThat(sessionRecord).isNull();
     }
 
-    private IdpResponse buildIdpResponse() {
+    private IdentityProviderResponse buildIdpResponse() {
         User user = new User.Builder(AuthUI.EMAIL_LINK_PROVIDER, TestConstants.EMAIL)
                 .build();
 
-        return new IdpResponse.Builder(user)
+        return new IdentityProviderResponse.Builder(user)
                 .setToken(TestConstants.TOKEN)
                 .setSecret(TestConstants.SECRET)
                 .build();

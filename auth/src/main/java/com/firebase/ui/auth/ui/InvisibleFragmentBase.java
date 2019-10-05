@@ -13,13 +13,11 @@ import com.firebase.ui.auth.R;
 import androidx.annotation.*;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class InvisibleFragmentBase extends FragmentBase {
 
     // Minimum time that the spinner will stay on screen, once it is shown.
     private static final long MIN_SPINNER_MS = 750;
     protected FrameLayout mFrameLayout;
-    protected View mTopLevelView;
     private Handler mHandler = new Handler();
     private MaterialProgressBar mProgressBar;
     // Last time that the progress bar was actually shown
@@ -29,8 +27,7 @@ public class InvisibleFragmentBase extends FragmentBase {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         // Create an indeterminate, circular progress bar in the app's theme
-        mProgressBar = new MaterialProgressBar(new ContextThemeWrapper(getContext(),
-                getFlowParams().themeId));
+        mProgressBar = new MaterialProgressBar(new ContextThemeWrapper(getContext(),R.style.FirebaseUI));
         mProgressBar.setIndeterminate(true);
         mProgressBar.setVisibility(View.GONE);
 
@@ -58,13 +55,10 @@ public class InvisibleFragmentBase extends FragmentBase {
 
     @Override
     public void hideProgress() {
-        doAfterTimeout(new Runnable() {
-            @Override
-            public void run() {
-                mLastShownTime = 0;
-                mProgressBar.setVisibility(View.GONE);
-                mFrameLayout.setVisibility(View.GONE);
-            }
+        doAfterTimeout(() -> {
+            mLastShownTime = 0;
+            mProgressBar.setVisibility(View.GONE);
+            mFrameLayout.setVisibility(View.GONE);
         });
     }
 

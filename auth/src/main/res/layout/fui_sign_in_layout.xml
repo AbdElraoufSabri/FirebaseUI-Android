@@ -9,10 +9,9 @@
         android:id="@+id/top_progress_bar"
         style="@style/FirebaseUI.TopProgressBar"
         tools:visibility="visible" />
-
+<!--    style="@style/TextInputLayoutStyle"-->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailEditTextLayout"
-        style="@style/TextInputLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true"
@@ -24,6 +23,7 @@
             android:layout_height="wrap_content"
             android:hint="Email"
             android:inputType="textEmailAddress"
+            android:text="abdelraoufsabri@gmail.com"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,7 +41,6 @@
         android:layout_height="wrap_content">
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/passwordEditTextLayout"
-            style="@style/TextInputLayoutStyle"
             android:layout_width="0dp"
             android:layout_weight="7"
             android:layout_height="wrap_content"
@@ -55,6 +54,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:hint="Password"
+                android:text="1qazzaq123ABC"
                 android:inputType="textPassword"
                 />
         </com.google.android.material.textfield.TextInputLayout>

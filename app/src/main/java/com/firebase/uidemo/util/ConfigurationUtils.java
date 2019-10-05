@@ -38,19 +38,19 @@ public final class ConfigurationUtils {
     }
 
     @NonNull
-    public static List<AuthUI.IdpConfig> getConfiguredProviders(@NonNull Context context) {
-        List<AuthUI.IdpConfig> providers = new ArrayList<>();
+    public static List<AuthUI.IdentityProviderConfig> getConfiguredProviders(@NonNull Context context) {
+        List<AuthUI.IdentityProviderConfig> providers = new ArrayList<>();
 
         if (!isGoogleMisconfigured(context)) {
-            providers.add(new AuthUI.IdpConfig.GoogleBuilder().build());
+            providers.add(new AuthUI.IdentityProviderConfig.GoogleBuilder().build());
         }
 
         if (!isFacebookMisconfigured(context)) {
-            providers.add(new AuthUI.IdpConfig.FacebookBuilder().build());
+            providers.add(new AuthUI.IdentityProviderConfig.FacebookBuilder().build());
         }
 
         if (!isTwitterMisconfigured(context)) {
-            providers.add(new AuthUI.IdpConfig.TwitterBuilder().build());
+            providers.add(new AuthUI.IdentityProviderConfig.TwitterBuilder().build());
         }
 
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
@@ -59,14 +59,10 @@ public final class ConfigurationUtils {
                 .setUrl("https://google.com")
                 .build();
 
-        providers.add(new AuthUI.IdpConfig.EmailBuilder()
+        providers.add(new AuthUI.IdentityProviderConfig.EmailBuilder()
                 .setAllowNewAccounts(true)
-                .enableEmailLinkSignIn()
                 .setActionCodeSettings(actionCodeSettings)
                 .build());
-
-
-        providers.add(new AuthUI.IdpConfig.PhoneBuilder().build());
 
 
         return providers;

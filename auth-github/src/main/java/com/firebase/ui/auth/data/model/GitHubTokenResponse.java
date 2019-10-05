@@ -6,7 +6,7 @@ import androidx.annotation.RestrictTo;
 
 import com.google.gson.annotations.SerializedName;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public final class GitHubTokenResponse {
     @SerializedName("access_token") private String mToken;
     @SerializedName("token_type") private String mType;

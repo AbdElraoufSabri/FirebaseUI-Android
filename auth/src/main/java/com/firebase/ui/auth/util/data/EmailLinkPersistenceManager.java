@@ -3,7 +3,7 @@ package com.firebase.ui.auth.util.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.common.internal.Preconditions;
 
@@ -16,7 +16,7 @@ import androidx.annotation.*;
 
 
 /** Manages saving/retrieving from SharedPreferences for email link sign in. */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class EmailLinkPersistenceManager {
 
     private static final String SHARED_PREF_NAME =
@@ -54,15 +54,15 @@ public class EmailLinkPersistenceManager {
     }
 
     public void saveIdpResponseForLinking(@NonNull Context context,
-                                          @NonNull IdpResponse idpResponseForLinking) {
+                                          @NonNull IdentityProviderResponse identityProviderResponseForLinking) {
         Preconditions.checkNotNull(context);
-        Preconditions.checkNotNull(idpResponseForLinking);
+        Preconditions.checkNotNull(identityProviderResponseForLinking);
         SharedPreferences.Editor editor =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE).edit();
-        editor.putString(KEY_EMAIL, idpResponseForLinking.getEmail());
-        editor.putString(KEY_PROVIDER, idpResponseForLinking.getProviderType());
-        editor.putString(KEY_IDP_TOKEN, idpResponseForLinking.getIdpToken());
-        editor.putString(KEY_IDP_SECRET, idpResponseForLinking.getIdpSecret());
+        editor.putString(KEY_EMAIL, identityProviderResponseForLinking.getEmail());
+        editor.putString(KEY_PROVIDER, identityProviderResponseForLinking.getProviderType());
+        editor.putString(KEY_IDP_TOKEN, identityProviderResponseForLinking.getIdpToken());
+        editor.putString(KEY_IDP_SECRET, identityProviderResponseForLinking.getIdpSecret());
         editor.apply();
     }
 
@@ -83,13 +83,13 @@ public class EmailLinkPersistenceManager {
 
         SessionRecord sessionRecord = new SessionRecord(sessionId, anonymousUserId).setEmail(email);
         if (provider != null && idpToken != null) {
-            IdpResponse response = new IdpResponse.Builder(
+            IdentityProviderResponse response = new IdentityProviderResponse.Builder(
                         new User.Builder(provider, email).build())
                     .setToken(idpToken)
                     .setSecret(idpSecret)
                     .setNewUser(false)
                     .build();
-            sessionRecord.setIdpResponseForLinking(response);
+            sessionRecord.setIdentityProviderResponseForLinking(response);
         }
         return sessionRecord;
     }
@@ -110,7 +110,7 @@ public class EmailLinkPersistenceManager {
         private String mSessionId;
         private String mEmail;
         @Nullable private String mAnonymousUserId;
-        @Nullable private IdpResponse mIdpResponseForLinking;
+        @Nullable private IdentityProviderResponse mIdentityProviderResponseForLinking;
 
         public SessionRecord(@NonNull String sessionId,
                              @Nullable String anonymousUserId) {
@@ -133,12 +133,12 @@ public class EmailLinkPersistenceManager {
         }
 
         @Nullable
-        public IdpResponse getIdpResponseForLinking() {
-            return mIdpResponseForLinking;
+        public IdentityProviderResponse getIdentityProviderResponseForLinking() {
+            return mIdentityProviderResponseForLinking;
         }
 
-        public SessionRecord setIdpResponseForLinking(@NonNull IdpResponse idpResponseForLinking) {
-            this.mIdpResponseForLinking = idpResponseForLinking;
+        public SessionRecord setIdentityProviderResponseForLinking(@NonNull IdentityProviderResponse identityProviderResponseForLinking) {
+            this.mIdentityProviderResponseForLinking = identityProviderResponseForLinking;
             return this;
         }
 

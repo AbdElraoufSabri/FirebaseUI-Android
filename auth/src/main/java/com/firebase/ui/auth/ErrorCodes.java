@@ -31,40 +31,9 @@ public final class ErrorCodes {
      */
     public static final int PROVIDER_ERROR = 4;
     /**
-     * Anonymous account linking failed.
-     */
-    public static final int ANONYMOUS_UPGRADE_MERGE_CONFLICT = 5;
-    /**
-     * Signing in with a different email in the WelcomeBackIdp flow or email link flow.
+     * Signing in with a different email in the WelcomeBackIdp flow
      */
     public static final int EMAIL_MISMATCH_ERROR = 6;
-    /**
-     * Attempting to sign in with an invalid email link.
-     */
-    public static final int INVALID_EMAIL_LINK_ERROR = 7;
-
-    /**
-     * Attempting to open an email link from a different device.
-     */
-    public static final int EMAIL_LINK_WRONG_DEVICE_ERROR = 8;
-
-    /**
-     * We need to prompt the user for their email.
-     * */
-    public static final int EMAIL_LINK_PROMPT_FOR_EMAIL_ERROR = 9;
-
-    /**
-     * Cross device linking flow - we need to ask the user if they want to continue linking or
-     * just sign in.
-     * */
-    public static final int EMAIL_LINK_CROSS_DEVICE_LINKING_ERROR = 10;
-
-    /**
-     * Attempting to open an email link from the same device, with anonymous upgrade enabled,
-     * but the underlying anonymous user has been changed.
-     */
-    public static final int EMAIL_LINK_DIFFERENT_ANONYMOUS_USER_ERROR = 11;
-
     /**
      *  Attempting to auth with account that is currently disabled in the Firebase console.
      */
@@ -75,7 +44,7 @@ public final class ErrorCodes {
     }
 
     @NonNull
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    
     public static String toFriendlyMessage(@Code int code) {
         switch (code) {
             case UNKNOWN_ERROR:
@@ -88,22 +57,9 @@ public final class ErrorCodes {
                 return "Developer error";
             case PROVIDER_ERROR:
                 return "Provider error";
-            case ANONYMOUS_UPGRADE_MERGE_CONFLICT:
-                return "User account merge conflict";
             case EMAIL_MISMATCH_ERROR:
                 return "You are are attempting to sign in a different email than previously " +
                         "provided";
-            case INVALID_EMAIL_LINK_ERROR:
-                return "You are are attempting to sign in with an invalid email link";
-            case EMAIL_LINK_PROMPT_FOR_EMAIL_ERROR:
-                return "Please enter your email to continue signing in";
-            case EMAIL_LINK_WRONG_DEVICE_ERROR:
-                return "You must open the email link on the same device.";
-            case EMAIL_LINK_CROSS_DEVICE_LINKING_ERROR:
-                return "You must determine if you want to continue linking or complete the sign in";
-            case EMAIL_LINK_DIFFERENT_ANONYMOUS_USER_ERROR:
-                return "The session associated with this sign-in request has either expired or " +
-                        "was cleared";
             case ERROR_USER_DISABLED:
                 return "The user account has been disabled by an administrator.";
             default:
@@ -120,13 +76,7 @@ public final class ErrorCodes {
             PLAY_SERVICES_UPDATE_CANCELLED,
             DEVELOPER_ERROR,
             PROVIDER_ERROR,
-            ANONYMOUS_UPGRADE_MERGE_CONFLICT,
             EMAIL_MISMATCH_ERROR,
-            INVALID_EMAIL_LINK_ERROR,
-            EMAIL_LINK_WRONG_DEVICE_ERROR,
-            EMAIL_LINK_PROMPT_FOR_EMAIL_ERROR,
-            EMAIL_LINK_CROSS_DEVICE_LINKING_ERROR,
-            EMAIL_LINK_DIFFERENT_ANONYMOUS_USER_ERROR,
             ERROR_USER_DISABLED
     })
     @Retention(RetentionPolicy.SOURCE)

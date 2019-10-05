@@ -9,7 +9,6 @@ import com.firebase.ui.auth.util.ui.PreambleHandler;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class PrivacyDisclosureUtils {
 
     private static final int NO_TOS_OR_PP = -1;

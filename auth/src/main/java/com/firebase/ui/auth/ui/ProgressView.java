@@ -6,7 +6,6 @@ import androidx.annotation.*;
 /**
  * View (Activity or Fragment, normally) that can respond to progress events.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public interface ProgressView {
 
     void showProgress(@StringRes int message);

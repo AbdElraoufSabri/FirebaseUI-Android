@@ -2,7 +2,7 @@ package com.firebase.ui.auth.ui;
 
 import android.os.Bundle;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -11,7 +11,7 @@ import androidx.annotation.RestrictTo;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public abstract class FragmentBase extends Fragment implements ProgressView {
     private HelperActivityBase mActivity;
 
@@ -31,7 +31,7 @@ public abstract class FragmentBase extends Fragment implements ProgressView {
 
     public void startSaveCredentials(
             FirebaseUser firebaseUser,
-            IdpResponse response,
+            IdentityProviderResponse response,
             @Nullable String password) {
         mActivity.startSaveCredentials(firebaseUser, response, password);
     }

@@ -21,7 +21,6 @@ import com.firebase.ui.auth.R;
 import androidx.annotation.*;
 import androidx.fragment.app.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public abstract class AppCompatBase extends HelperActivityBase {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

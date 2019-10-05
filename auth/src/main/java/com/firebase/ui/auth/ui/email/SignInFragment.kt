@@ -1,5 +1,3 @@
-
-
 package com.firebase.ui.auth.ui.email
 
 import android.content.Intent
@@ -13,7 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.afollestad.vvalidator.form
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.FirebaseUiException
-import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.auth.IdentityProviderResponse
 import com.firebase.ui.auth.R
 import com.firebase.ui.auth.data.model.User
 import com.firebase.ui.auth.ui.FragmentBase
@@ -22,15 +20,11 @@ import com.firebase.ui.auth.util.ui.fieldvalidators.VValidation.Companion.format
 import com.firebase.ui.auth.viewmodel.ResourceObserver
 import com.firebase.ui.auth.viewmodel.email.CheckEmailHandler
 import com.firebase.ui.auth.viewmodel.email.EmailSignInHandler
-import com.google.android.gms.common.internal.ConnectionErrorMessages.getErrorMessage
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import kotlinx.android.synthetic.main.fui_sign_in_layout.*
-import kotlinx.android.synthetic.main.fui_sign_in_layout.top_progress_bar
 import kotlinx.android.synthetic.main.fui_sign_in_layout.view.*
-import kotlinx.android.synthetic.main.fui_welcome_back_password_prompt_layout.*
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class SignInFragment : FragmentBase() {
     companion object {
         val TAG = "SignInFragment"
@@ -45,7 +39,6 @@ class SignInFragment : FragmentBase() {
 
     }
 
-    private lateinit var mUser: User
     private lateinit var mHandler: EmailSignInHandler
     private lateinit var mCheckEmailHandler: CheckEmailHandler
     private lateinit var mCheckEmailListener: CheckEmailListener
@@ -61,18 +54,13 @@ class SignInFragment : FragmentBase() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            mUser = User.getUser(arguments)
-        } else {
-            mUser = User.getUser(savedInstanceState)
-        }
 
         mHandler = ViewModelProviders.of(this).get(EmailSignInHandler::class.java)
         mHandler.init(flowParams)
 
-        mHandler.operation.observe(this, object : ResourceObserver<IdpResponse>(
+        mHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(
                 this, R.string.fui_progress_dialog_signing_in) {
-            override fun onSuccess(response: IdpResponse) {
+            override fun onSuccess(response: IdentityProviderResponse) {
                 startSaveCredentials(
                         mHandler.currentUser, response, mHandler.pendingPassword)
             }
@@ -83,8 +71,8 @@ class SignInFragment : FragmentBase() {
         })
 
 
-
     }
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -166,7 +154,7 @@ class SignInFragment : FragmentBase() {
         val activity = activity
 
         check(activity is CheckEmailListener) { "Activity must implement CheckEmailListener" }
-        check(activity is AuthenticationButtonsListener){"Activity must implement AuthenticationButtonsListener"}
+        check(activity is AuthenticationButtonsListener) { "Activity must implement AuthenticationButtonsListener" }
 
         mCheckEmailListener = activity
         mAuthenticationButtonsListener = activity
@@ -179,8 +167,6 @@ class SignInFragment : FragmentBase() {
                 val provider: String? = user.providerId
 
                 if (provider == null) {
-
-
                     mCheckEmailListener.onNewUser(
                             User.Builder(EmailAuthProvider.PROVIDER_ID, email)
                                     .setName(user.name)
@@ -209,11 +195,8 @@ class SignInFragment : FragmentBase() {
             return
         }
 
-        if (flowParams.enableHints) {
-            signInButton.performClick()
-        }
+        forgotPassword.setOnClickListener { mAuthenticationButtonsListener.forgotPasswordClicked() }
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         mCheckEmailHandler.onActivityResult(requestCode, resultCode, data)
@@ -248,6 +231,7 @@ class SignInFragment : FragmentBase() {
          * Email entered does not belong to an existing user.
          */
         fun onNewUser(user: User)
+
         /**
          * Email entered corresponds to an existing user whose sign in methods we do not support.
          */

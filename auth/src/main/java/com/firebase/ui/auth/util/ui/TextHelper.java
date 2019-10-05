@@ -7,7 +7,6 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class TextHelper {
 
     public static void boldAllOccurencesOfText(@NonNull SpannableStringBuilder builder,

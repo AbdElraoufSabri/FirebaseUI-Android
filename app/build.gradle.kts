@@ -14,7 +14,6 @@ android {
 dependencies {
 
     implementation(project(":auth"))
-    implementation(project(":auth-github"))
 
     implementation(Libs.material)
     implementation(Libs.multidex)

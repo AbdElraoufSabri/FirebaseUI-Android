@@ -3,11 +3,9 @@ package com.firebase.ui.auth.viewmodel;
 import androidx.lifecycle.Observer;
 import androidx.annotation.Nullable;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.*;
 import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
-import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.State;
@@ -48,7 +46,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link EmailLinkSignInHandler}.
  */
 @RunWith(RobolectricTestRunner.class)
-public class EmailLinkSignInHandlerTest {
+public class EmailLinkMainSignInHandlerTest {
 
     private static final String EMAIL_LINK =
             "https://fake.com/__/auth/action?apiKey=apiKey&mode=signIn"
@@ -63,7 +61,7 @@ public class EmailLinkSignInHandlerTest {
     @Mock private FirebaseAuth mMockAuth;
     @Mock private FirebaseAuth mScratchMockAuth;
     @Mock private FirebaseUser mMockAnonUser;
-    @Mock private Observer<Resource<IdpResponse>> mResponseObserver;
+    @Mock private Observer<Resource<IdentityProviderResponse>> mResponseObserver;
     @Mock private AuthResult mMockAuthResult;
     @Mock private AdditionalUserInfo mockAdditionalUserInfo;
 
@@ -102,12 +100,12 @@ public class EmailLinkSignInHandlerTest {
         mHandler.startSignIn();
 
         verify(mMockAuth).isSignInWithEmailLink(any(String.class));
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         FirebaseUiException exception = (FirebaseUiException) captor.getValue().getException();
@@ -127,12 +125,12 @@ public class EmailLinkSignInHandlerTest {
         mHandler.startSignIn();
 
         verify(mMockAuth).isSignInWithEmailLink(any(String.class));
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         FirebaseUiException exception = (FirebaseUiException) captor.getValue().getException();
@@ -157,12 +155,12 @@ public class EmailLinkSignInHandlerTest {
         verify(mMockAuth).isSignInWithEmailLink(any(String.class));
         verify(mMockAuth).checkActionCode(any(String.class));
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         FirebaseUiException exception = (FirebaseUiException) captor.getValue().getException();
@@ -187,12 +185,12 @@ public class EmailLinkSignInHandlerTest {
         verify(mMockAuth).isSignInWithEmailLink(any(String.class));
         verify(mMockAuth).checkActionCode(any(String.class));
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         FirebaseUiException exception = (FirebaseUiException) captor.getValue().getException();
@@ -216,12 +214,12 @@ public class EmailLinkSignInHandlerTest {
 
         verify(mMockAuth).isSignInWithEmailLink(any(String.class));
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         FirebaseUiException exception = (FirebaseUiException) captor.getValue().getException();
@@ -242,11 +240,11 @@ public class EmailLinkSignInHandlerTest {
 
         verify(mMockAuth).isSignInWithEmailLink(any(String.class));
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         FirebaseUiException exception = (FirebaseUiException) captor.getValue().getException();
@@ -269,15 +267,15 @@ public class EmailLinkSignInHandlerTest {
 
         mHandler.startSignIn();
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
-        IdpResponse response = captor.getValue().getValue();
+        IdentityProviderResponse response = captor.getValue().getValue();
 
         assertThat(response.getUser().getProviderId()).isEqualTo(AuthUI.EMAIL_LINK_PROVIDER);
         assertThat(response.getUser().getEmail()).isEqualTo(mMockAuthResult.getUser()
@@ -309,16 +307,16 @@ public class EmailLinkSignInHandlerTest {
 
         mHandler.startSignIn();
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
-        IdpResponse response = captor.getValue().getValue();
+        IdentityProviderResponse response = captor.getValue().getValue();
 
         assertThat(response.getUser().getProviderId()).isEqualTo(AuthUI.EMAIL_LINK_PROVIDER);
         assertThat(response.getUser().getEmail()).isEqualTo(mMockAuthResult.getUser()
@@ -347,13 +345,13 @@ public class EmailLinkSignInHandlerTest {
 
         mHandler.startSignIn();
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
 
@@ -407,18 +405,18 @@ public class EmailLinkSignInHandlerTest {
         assertThat(mPersistenceManager.retrieveSessionRecord(RuntimeEnvironment.application))
                 .isNull();
 
-        // Validate IdpResponse
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        // Validate IdentityProviderResponse
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
 
-        IdpResponse response = captor.getValue().getValue();
+        IdentityProviderResponse response = captor.getValue().getValue();
 
         assertThat(captor.getValue().getState()).isEqualTo(State.SUCCESS);
 
@@ -453,13 +451,13 @@ public class EmailLinkSignInHandlerTest {
 
         mHandler.startSignIn();
 
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
 
@@ -517,21 +515,21 @@ public class EmailLinkSignInHandlerTest {
         assertThat(mPersistenceManager.retrieveSessionRecord(RuntimeEnvironment.application))
                 .isNull();
 
-        // Validate IdpResponse
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        // Validate IdentityProviderResponse
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
 
         FirebaseAuthAnonymousUpgradeException mergeException =
                 ((FirebaseAuthAnonymousUpgradeException) captor.getValue().getException());
 
-        IdpResponse response = mergeException.getResponse();
+        IdentityProviderResponse response = mergeException.getResponse();
         assertThat(response.getCredentialForLinking()).isNotNull();
         assertThat(response.getCredentialForLinking().getProvider()).isEqualTo
                 (FacebookAuthProvider.PROVIDER_ID);
@@ -566,13 +564,13 @@ public class EmailLinkSignInHandlerTest {
                 .isNull();
 
         // Validate failure
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         assertThat(captor.getValue().getException()).isNotNull();
@@ -616,23 +614,23 @@ public class EmailLinkSignInHandlerTest {
                 .isNull();
 
         // Validate failure
-        ArgumentCaptor<Resource<IdpResponse>> captor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> captor =
                 ArgumentCaptor.forClass(Resource.class);
 
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResponseObserver).onChanged(captor.capture());
 
         assertThat(captor.getValue().getException()).isNotNull();
     }
 
-    private IdpResponse buildFacebookIdpResponse() {
+    private IdentityProviderResponse buildFacebookIdpResponse() {
         User user = new User.Builder(FacebookAuthProvider.PROVIDER_ID, TestConstants.EMAIL)
                 .build();
 
-        return new IdpResponse.Builder(user)
+        return new IdentityProviderResponse.Builder(user)
                 .setToken(TestConstants.TOKEN)
                 .setSecret(TestConstants.SECRET)
                 .build();

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.IntentSender;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.IntentRequiredException;
 import com.firebase.ui.auth.data.model.PendingIntentRequiredException;
 import com.firebase.ui.auth.ui.FragmentBase;
@@ -52,7 +52,7 @@ public final class FlowUtils {
             activity.startIntentSenderForResult(
                     intent.getIntentSender(), requestCode, null, 0, 0, 0);
         } catch (IntentSender.SendIntentException e) {
-            activity.finish(Activity.RESULT_CANCELED, IdpResponse.getErrorIntent(e));
+            activity.finish(Activity.RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(e));
         }
     }
 
@@ -64,7 +64,7 @@ public final class FlowUtils {
                     intent.getIntentSender(), requestCode, null, 0, 0, 0, null);
         } catch (IntentSender.SendIntentException e) {
             HelperActivityBase activity = (HelperActivityBase) fragment.requireActivity();
-            activity.finish(Activity.RESULT_CANCELED, IdpResponse.getErrorIntent(e));
+            activity.finish(Activity.RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(e));
         }
     }
 }

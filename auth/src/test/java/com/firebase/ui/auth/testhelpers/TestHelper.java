@@ -18,35 +18,20 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
-import com.firebase.ui.auth.AuthMethodPickerLayout;
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.AuthUI.IdpConfig;
+import com.firebase.ui.auth.*;
 import com.firebase.ui.auth.R;
+import com.firebase.ui.auth.AuthUI.IdentityProviderConfig;
 import com.firebase.ui.auth.data.model.FlowParameters;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.ActionCodeSettings;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GithubAuthProvider;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.*;
+import com.google.firebase.auth.*;
 
 import org.robolectric.RuntimeEnvironment;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-import static com.firebase.ui.auth.AuthUI.EMAIL_LINK_PROVIDER;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public final class TestHelper {
 
@@ -109,45 +94,20 @@ public final class TestHelper {
     }
 
     public static FlowParameters getFlowParameters(Collection<String> providerIds) {
-        return getFlowParameters(providerIds, false);
-    }
-
-    public static FlowParameters getFlowParameters(Collection<String> providerIds,
-                                                   boolean enableAnonymousUpgrade) {
-        return getFlowParameters(providerIds, enableAnonymousUpgrade, null);
-    }
-
-    public static FlowParameters getFlowParameters(Collection<String> providerIds,
-                                                   boolean enableAnonymousUpgrade,
-                                                   AuthMethodPickerLayout customLayout) {
-        List<IdpConfig> idpConfigs = new ArrayList<>();
+        List<IdentityProviderConfig> identityProviderConfigs = new ArrayList<>();
         for (String providerId : providerIds) {
             switch (providerId) {
                 case GoogleAuthProvider.PROVIDER_ID:
-                    idpConfigs.add(new IdpConfig.GoogleBuilder().build());
+                    identityProviderConfigs.add(new IdentityProviderConfig.GoogleBuilder().build());
                     break;
                 case FacebookAuthProvider.PROVIDER_ID:
-                    idpConfigs.add(new IdpConfig.FacebookBuilder().build());
+                    identityProviderConfigs.add(new IdentityProviderConfig.FacebookBuilder().build());
                     break;
                 case TwitterAuthProvider.PROVIDER_ID:
-                    idpConfigs.add(new IdpConfig.TwitterBuilder().build());
-                    break;
-                case GithubAuthProvider.PROVIDER_ID:
-                    idpConfigs.add(new IdpConfig.GitHubBuilder().build());
-                    break;
-                case EMAIL_LINK_PROVIDER:
-                    idpConfigs.add(new IdpConfig.EmailBuilder().enableEmailLinkSignIn()
-                            .setActionCodeSettings(ActionCodeSettings.newBuilder().setUrl("URL")
-                                    .setHandleCodeInApp(true).build()).build());
+                    identityProviderConfigs.add(new AuthUI.IdentityProviderConfig.TwitterBuilder().build());
                     break;
                 case EmailAuthProvider.PROVIDER_ID:
-                    idpConfigs.add(new IdpConfig.EmailBuilder().build());
-                    break;
-                case PhoneAuthProvider.PROVIDER_ID:
-                    idpConfigs.add(new IdpConfig.PhoneBuilder().build());
-                    break;
-                case AuthUI.ANONYMOUS_PROVIDER:
-                    idpConfigs.add(new IdpConfig.AnonymousBuilder().build());
+                    identityProviderConfigs.add(new IdentityProviderConfig.EmailBuilder().build());
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown provider: " + providerId);
@@ -155,23 +115,17 @@ public final class TestHelper {
         }
         return new FlowParameters(
                 DEFAULT_APP_NAME,
-                idpConfigs,
-                AuthUI.getDefaultTheme(),
-                AuthUI.NO_LOGO,
+                identityProviderConfigs,
                 null,
                 null,
-                true,
-                true,
-                enableAnonymousUpgrade,
-                false,
-                null,
-                customLayout);
+                true);
     }
 
     /**
      * Set a private, obfuscated field of an object.
-     * @param obj the object to modify.
-     * @param objClass the object's class.
+     *
+     * @param obj        the object to modify.
+     * @param objClass   the object's class.
      * @param fieldClass the class of the target field.
      * @param fieldValue the value to use for the field.
      */

@@ -16,8 +16,8 @@ package com.firebase.uidemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+
+import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,9 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.util.ExtraConstants;
-import com.firebase.uidemo.auth.AnonymousUpgradeActivity;
 import com.firebase.uidemo.auth.AuthUiActivity;
 
 import butterknife.BindView;
@@ -42,15 +39,6 @@ public class ChooserActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (AuthUI.canHandleIntent(getIntent())) {
-            Intent intent = new Intent(ChooserActivity.this, AuthUiActivity
-                    .class);
-            intent.putExtra(ExtraConstants.EMAIL_LINK_SIGN_IN, getIntent().getData().toString());
-            startActivity(intent);
-            finish();
-            return;
-        }
-
         setContentView(R.layout.activity_chooser);
         ButterKnife.bind(this);
 
@@ -62,19 +50,17 @@ public class ChooserActivity extends AppCompatActivity {
     private static class ActivityChooserAdapter
             extends RecyclerView.Adapter<ActivityStarterHolder> {
         private static final Class[] CLASSES = new Class[]{
-                AuthUiActivity.class,
-                AnonymousUpgradeActivity.class
+                AuthUiActivity.class
         };
 
         private static final int[] DESCRIPTION_NAMES = new int[]{
-                R.string.title_auth_activity,
-                R.string.title_anonymous_upgrade
+                R.string.title_auth_activity
         };
 
         private static final int[] DESCRIPTION_IDS = new int[]{
-                R.string.desc_auth,
-                R.string.desc_anonymous_upgrade};
+                R.string.desc_auth};
 
+        @NonNull
         @Override
         public ActivityStarterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ActivityStarterHolder(

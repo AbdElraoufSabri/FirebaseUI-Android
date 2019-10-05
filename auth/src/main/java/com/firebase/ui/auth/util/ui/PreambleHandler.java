@@ -20,7 +20,6 @@ import androidx.annotation.*;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class PreambleHandler {
     private static final String BTN_TARGET = "%BTN%";
     private static final String TOS_TARGET = "%TOS%";

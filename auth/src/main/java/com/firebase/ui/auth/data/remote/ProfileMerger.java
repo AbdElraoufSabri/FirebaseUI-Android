@@ -3,7 +3,7 @@ package com.firebase.ui.auth.data.remote;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.util.data.TaskFailureLogger;
 import com.google.android.gms.tasks.Continuation;
@@ -20,13 +20,12 @@ import androidx.annotation.*;
  * <p>
  * <b>Note:</b> This operation always returns a successful task to minimize login interruptions.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ProfileMerger implements Continuation<AuthResult, Task<AuthResult>> {
     private static final String TAG = "ProfileMerger";
 
-    private final IdpResponse mResponse;
+    private final IdentityProviderResponse mResponse;
 
-    public ProfileMerger(IdpResponse response) {
+    public ProfileMerger(IdentityProviderResponse response) {
         mResponse = response;
     }
 
@@ -37,7 +36,7 @@ public class ProfileMerger implements Continuation<AuthResult, Task<AuthResult>>
 
         String name = firebaseUser.getDisplayName();
         Uri photoUri = firebaseUser.getPhotoUrl();
-        if (!TextUtils.isEmpty(name) && photoUri != null) {
+        if (hasMergeConflict(name, photoUri)) {
             return Tasks.forResult(authResult);
         }
 
@@ -57,5 +56,9 @@ public class ProfileMerger implements Continuation<AuthResult, Task<AuthResult>>
                         return Tasks.forResult(authResult);
                     }
                 });
+    }
+
+    private boolean hasMergeConflict(String name, Uri photoUri) {
+        return !TextUtils.isEmpty(name) && photoUri != null;
     }
 }

@@ -5,15 +5,12 @@ import android.app.Application;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.Resource;
-import com.firebase.ui.auth.util.data.AuthOperationManager;
 import com.firebase.ui.auth.util.data.ProviderUtils;
 import com.firebase.ui.auth.viewmodel.SignInViewModelBase;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthCredential;
@@ -21,7 +18,6 @@ import com.google.firebase.auth.AuthResult;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class LinkingSocialProviderResponseHandler extends SignInViewModelBase {
     private AuthCredential mRequestedSignInCredential;
     private String mEmail;
@@ -35,9 +31,9 @@ public class LinkingSocialProviderResponseHandler extends SignInViewModelBase {
         mEmail = email;
     }
 
-    public void startSignIn(@NonNull final IdpResponse response) {
+    public void startSignIn(@NonNull final IdentityProviderResponse response) {
         if (!response.isSuccessful()) {
-            setResult(Resource.<IdpResponse>forFailure(response.getError()));
+            setResult(Resource.<IdentityProviderResponse>forFailure(response.getError()));
             return;
         }
         if (!AuthUI.SOCIAL_PROVIDERS.contains(response.getProviderType())) {
@@ -45,12 +41,12 @@ public class LinkingSocialProviderResponseHandler extends SignInViewModelBase {
                     "This handler cannot be used to link email or phone providers");
         }
         if (mEmail != null && !mEmail.equals(response.getEmail())) {
-            setResult(Resource.<IdpResponse>forFailure(new FirebaseUiException
+            setResult(Resource.<IdentityProviderResponse>forFailure(new FirebaseUiException
                     (ErrorCodes.EMAIL_MISMATCH_ERROR)));
             return;
         }
 
-        setResult(Resource.<IdpResponse>forLoading());
+        setResult(Resource.<IdentityProviderResponse>forLoading());
 
         final AuthCredential credential = ProviderUtils.getAuthCredential(response);
 
@@ -86,7 +82,7 @@ public class LinkingSocialProviderResponseHandler extends SignInViewModelBase {
                             if (task.isSuccessful()) {
                                 handleSuccess(response, task.getResult());
                             } else {
-                                setResult(Resource.<IdpResponse>forFailure(task.getException()));
+                                setResult(Resource.<IdentityProviderResponse>forFailure(task.getException()));
                             }
                         }
                     });

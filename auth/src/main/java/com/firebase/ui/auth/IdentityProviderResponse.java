@@ -15,43 +15,37 @@
 package com.firebase.ui.auth;
 
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.*;
 import android.text.TextUtils;
 
 import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.auth.util.ExtraConstants;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 import androidx.annotation.*;
 
 /**
  * A container that encapsulates the result of authenticating with an Identity Provider.
  */
-public class IdpResponse implements Parcelable {
-    public static final Creator<IdpResponse> CREATOR = new Creator<IdpResponse>() {
+public class IdentityProviderResponse implements Parcelable {
+    public static final Creator<IdentityProviderResponse> CREATOR = new Creator<IdentityProviderResponse>() {
         @Override
-        public IdpResponse createFromParcel(Parcel in) {
-            return new IdpResponse(
-                    in.<User>readParcelable(User.class.getClassLoader()),
-                    in.readString(),
-                    in.readString(),
+        public IdentityProviderResponse createFromParcel(Parcel in) {
+            return new IdentityProviderResponse(
+                    in.readParcelable(User.class.getClassLoader()),
+                    in.readString(), // token
+                    in.readString(), // secret
                     in.readInt() == 1,
                     (FirebaseUiException) in.readSerializable(),
-                    in.<AuthCredential>readParcelable(AuthCredential.class.getClassLoader())
+                    in.readParcelable(AuthCredential.class.getClassLoader())
             );
         }
 
         @Override
-        public IdpResponse[] newArray(int size) {
-            return new IdpResponse[size];
+        public IdentityProviderResponse[] newArray(int size) {
+            return new IdentityProviderResponse[size];
         }
     };
 
@@ -64,11 +58,11 @@ public class IdpResponse implements Parcelable {
 
     private final FirebaseUiException mException;
 
-    private IdpResponse(@NonNull FirebaseUiException e) {
+    private IdentityProviderResponse(@NonNull FirebaseUiException e) {
         this(null, null, null, false, e, null);
     }
 
-    private IdpResponse(
+    private IdentityProviderResponse(
             @NonNull User user,
             @Nullable String token,
             @Nullable String secret,
@@ -76,11 +70,11 @@ public class IdpResponse implements Parcelable {
         this(user, token, secret, isNewUser, null, null);
     }
 
-    private IdpResponse(AuthCredential credential, FirebaseUiException e) {
+    private IdentityProviderResponse(AuthCredential credential, FirebaseUiException e) {
         this(null, null, null, false, e, credential);
     }
 
-    private IdpResponse(
+    private IdentityProviderResponse(
             User user,
             String token,
             String secret,
@@ -96,13 +90,13 @@ public class IdpResponse implements Parcelable {
     }
 
     /**
-     * Extract the {@link IdpResponse} from the flow's result intent.
+     * Extract the {@link IdentityProviderResponse} from the flow's result intent.
      *
      * @param resultIntent The intent which {@code onActivityResult} was called with.
-     * @return The IdpResponse containing the token(s) from signing in with the Idp
+     * @return The IdentityProviderResponse containing the token(s) from signing in with the Idp
      */
     @Nullable
-    public static IdpResponse fromResultIntent(@Nullable Intent resultIntent) {
+    public static IdentityProviderResponse fromResultIntent(@Nullable Intent resultIntent) {
         if (resultIntent != null) {
             return resultIntent.getParcelableExtra(ExtraConstants.IDP_RESPONSE);
         } else {
@@ -111,37 +105,32 @@ public class IdpResponse implements Parcelable {
     }
 
     @NonNull
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public static IdpResponse from(@NonNull Exception e) {
+    public static IdentityProviderResponse from(@NonNull Exception e) {
         if (e instanceof FirebaseUiException) {
-            return new IdpResponse((FirebaseUiException) e);
+            return new IdentityProviderResponse((FirebaseUiException) e);
         } else {
             FirebaseUiException wrapped = new FirebaseUiException(ErrorCodes.UNKNOWN_ERROR, e);
             wrapped.setStackTrace(e.getStackTrace());
-            return new IdpResponse(wrapped);
+            return new IdentityProviderResponse(wrapped);
         }
     }
 
     @NonNull
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static Intent getErrorIntent(@NonNull Exception e) {
         return from(e).toIntent();
     }
 
     @NonNull
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public IdpResponse withResult(AuthResult result) {
+    public IdentityProviderResponse withResult(AuthResult result) {
         return mutate().setNewUser(result.getAdditionalUserInfo().isNewUser()).build();
     }
 
     @NonNull
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public Intent toIntent() {
         return new Intent().putExtra(ExtraConstants.IDP_RESPONSE, this);
     }
 
     @NonNull
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public Builder mutate() {
         if (!isSuccessful()) {
             throw new IllegalStateException("Cannot mutate an unsuccessful response.");
@@ -149,12 +138,10 @@ public class IdpResponse implements Parcelable {
         return new Builder(this);
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public boolean isSuccessful() {
         return mException == null;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public User getUser() {
         return mUser;
     }
@@ -252,8 +239,7 @@ public class IdpResponse implements Parcelable {
             if (oos != null) {
                 try {
                     oos.close();
-                } catch (IOException ignored) {
-                }
+                } catch (IOException ignored) { }
             }
         }
 
@@ -265,16 +251,39 @@ public class IdpResponse implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        IdpResponse response = (IdpResponse) o;
+        IdentityProviderResponse response = (IdentityProviderResponse) o;
 
-        return (mUser == null ? response.mUser == null : mUser.equals(response.mUser))
-                && (mToken == null ? response.mToken == null : mToken.equals(response.mToken))
-                && (mSecret == null ? response.mSecret == null : mSecret.equals(response.mSecret))
-                && (mIsNewUser == response.mIsNewUser)
-                && (mException == null ? response.mException == null : mException.equals(response
-                .mException))
-                && (mPendingCredential == null ? response.mPendingCredential == null :
-                mPendingCredential.getProvider().equals(response.mPendingCredential.getProvider()));
+        return sameUser(response)
+                && sameToken(response)
+                && sameSecret(response)
+                && sameIsNewUser(response)
+                && sameException(response)
+                && samePendingCredentials(response);
+    }
+
+    private boolean samePendingCredentials(IdentityProviderResponse response) {
+        return mPendingCredential == null ? response.mPendingCredential == null :
+                mPendingCredential.getProvider().equals(response.mPendingCredential.getProvider());
+    }
+
+    private boolean sameException(IdentityProviderResponse response) {
+        return mException == null ? response.mException == null : mException.equals(response.mException);
+    }
+
+    private boolean sameIsNewUser(IdentityProviderResponse response) {
+        return mIsNewUser == response.mIsNewUser;
+    }
+
+    private boolean sameSecret(IdentityProviderResponse response) {
+        return mSecret == null ? response.mSecret == null : mSecret.equals(response.mSecret);
+    }
+
+    private boolean sameToken(IdentityProviderResponse response) {
+        return mToken == null ? response.mToken == null : mToken.equals(response.mToken);
+    }
+
+    private boolean sameUser(IdentityProviderResponse response) {
+        return mUser == null ? response.mUser == null : mUser.equals(response.mUser);
     }
 
     @Override
@@ -284,14 +293,14 @@ public class IdpResponse implements Parcelable {
         result = 31 * result + (mSecret == null ? 0 : mSecret.hashCode());
         result = 31 * result + (mIsNewUser ? 1 : 0);
         result = 31 * result + (mException == null ? 0 : mException.hashCode());
-        result = 31 * result + (mPendingCredential == null ? 0 : mPendingCredential.getProvider()
-                .hashCode());
+        result = 31 * result + (mPendingCredential == null ? 0 : mPendingCredential.getProvider().hashCode());
+
         return result;
     }
 
     @Override
     public String toString() {
-        return "IdpResponse{" +
+        return "IdentityProviderResponse{" +
                 "mUser=" + mUser +
                 ", mToken='" + mToken + '\'' +
                 ", mSecret='" + mSecret + '\'' +
@@ -301,7 +310,6 @@ public class IdpResponse implements Parcelable {
                 '}';
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static class Builder {
         private final User mUser;
         private final AuthCredential mPendingCredential;
@@ -320,7 +328,7 @@ public class IdpResponse implements Parcelable {
             mPendingCredential = pendingCredential;
         }
 
-        public Builder(@NonNull IdpResponse response) {
+        public Builder(@NonNull IdentityProviderResponse response) {
             mUser = response.mUser;
             mToken = response.mToken;
             mSecret = response.mSecret;
@@ -343,26 +351,18 @@ public class IdpResponse implements Parcelable {
             return this;
         }
 
-        public IdpResponse build() {
-            if (mPendingCredential != null) {
-                return new IdpResponse(mPendingCredential, new FirebaseUiException(ErrorCodes
-                        .ANONYMOUS_UPGRADE_MERGE_CONFLICT));
-            }
-
+        public IdentityProviderResponse build() {
             String providerId = mUser.getProviderId();
             if (!AuthUI.SUPPORTED_PROVIDERS.contains(providerId)) {
                 throw new IllegalStateException("Unknown provider: " + providerId);
             }
             if (AuthUI.SOCIAL_PROVIDERS.contains(providerId) && TextUtils.isEmpty(mToken)) {
-                throw new IllegalStateException(
-                        "Token cannot be null when using a non-email provider.");
+                throw new IllegalStateException("Token cannot be null when using a non-email provider.");
             }
-            if (providerId.equals(TwitterAuthProvider.PROVIDER_ID)
-                    && TextUtils.isEmpty(mSecret)) {
-                throw new IllegalStateException(
-                        "Secret cannot be null when using the Twitter provider.");
+            if (providerId.equals(TwitterAuthProvider.PROVIDER_ID) && TextUtils.isEmpty(mSecret)) {
+                throw new IllegalStateException("Secret cannot be null when using the Twitter provider.");
             }
-            return new IdpResponse(mUser, mToken, mSecret, mIsNewUser);
+            return new IdentityProviderResponse(mUser, mToken, mSecret, mIsNewUser);
         }
     }
 }

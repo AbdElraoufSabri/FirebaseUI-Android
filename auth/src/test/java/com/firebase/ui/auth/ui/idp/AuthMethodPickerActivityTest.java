@@ -22,7 +22,6 @@ import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.R;
 import com.firebase.ui.auth.testhelpers.TestHelper;
-import com.firebase.ui.auth.ui.email.EmailActivity;
 import com.firebase.ui.auth.ui.phone.PhoneActivity;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;

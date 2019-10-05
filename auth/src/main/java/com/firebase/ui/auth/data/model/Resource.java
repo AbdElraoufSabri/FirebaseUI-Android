@@ -11,7 +11,6 @@ import androidx.annotation.RestrictTo;
  * This state can either be successful or not. In either case, it must be complete to represent
  * these states.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class Resource<T> {
     private final State mState;
     private final T mValue;

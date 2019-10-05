@@ -4,7 +4,7 @@ package com.firebase.ui.auth.viewmodel;
 import androidx.lifecycle.Observer;
 
 import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
@@ -19,7 +19,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
@@ -50,7 +49,7 @@ public class PhoneProviderResponseHandlerTest {
     @Mock FirebaseAuth mMockAuth;
     @Mock FirebaseUser mMockUser;
     @Mock PhoneAuthCredential mCredential;
-    @Mock Observer<Resource<IdpResponse>> mResponseObserver;
+    @Mock Observer<Resource<IdentityProviderResponse>> mResponseObserver;
 
     private PhoneProviderResponseHandler mHandler;
 
@@ -72,13 +71,13 @@ public class PhoneProviderResponseHandlerTest {
         when(mMockAuth.signInWithCredential(mCredential))
                 .thenReturn(AutoCompleteTask.forSuccess(FakeAuthResult.INSTANCE));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 PhoneAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .build();
 
         mHandler.startSignIn(mCredential, response);
         verify(mMockAuth).signInWithCredential(mCredential);
-        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test
@@ -89,14 +88,14 @@ public class PhoneProviderResponseHandlerTest {
         when(mMockAuth.getCurrentUser().linkWithCredential(mCredential))
                 .thenReturn(AutoCompleteTask.forSuccess(FakeAuthResult.INSTANCE));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 PhoneAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .build();
 
         mHandler.startSignIn(mCredential, response);
 
         verify(mMockAuth.getCurrentUser()).linkWithCredential(mCredential);
-        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
 
@@ -113,7 +112,7 @@ public class PhoneProviderResponseHandlerTest {
         when(mMockAuth.getCurrentUser().linkWithCredential(mCredential))
                 .thenReturn(AutoCompleteTask.<AuthResult>forFailure(ex));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 PhoneAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .build();
 
@@ -123,9 +122,9 @@ public class PhoneProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResponseObserver);
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResponseObserver).onChanged(resolveCaptor.capture());
 

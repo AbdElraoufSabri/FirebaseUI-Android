@@ -3,7 +3,7 @@ package com.firebase.ui.auth.util;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -12,7 +12,7 @@ import androidx.annotation.*;
 /**
  * Utility class for working with {@link Credential} objects.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class CredentialUtils {
     private CredentialUtils() {
         throw new AssertionError("No instance for you!");
@@ -20,7 +20,7 @@ public class CredentialUtils {
 
     /**
      * Build a credential for the specified {@link FirebaseUser} with optional password and {@link
-     * IdpResponse}.
+     * IdentityProviderResponse}.
      * <p>
      * If the credential cannot be built (for example, empty email) then will return {@code null}.
      */

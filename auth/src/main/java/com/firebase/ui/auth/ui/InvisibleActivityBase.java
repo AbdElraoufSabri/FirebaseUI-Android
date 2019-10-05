@@ -1,20 +1,15 @@
 package com.firebase.ui.auth.ui;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.ContextThemeWrapper;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.*;
+import android.view.*;
 import android.widget.FrameLayout;
 
 import com.firebase.ui.auth.R;
 
-import androidx.annotation.*;
+import androidx.annotation.Nullable;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class InvisibleActivityBase extends HelperActivityBase {
 
     // Minimum time that the spinner will stay on screen, once it is shown.
@@ -36,8 +31,7 @@ public class InvisibleActivityBase extends HelperActivityBase {
         mProgressBar.setVisibility(View.GONE);
 
         // Set bar to float in the center
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
 
         // Add to the container
@@ -58,32 +52,23 @@ public class InvisibleActivityBase extends HelperActivityBase {
 
     @Override
     public void hideProgress() {
-        doAfterTimeout(new Runnable() {
-            @Override
-            public void run() {
-                mLastShownTime = 0;
-                mProgressBar.setVisibility(View.GONE);
-            }
+        doAfterTimeout(() -> {
+            mLastShownTime = 0;
+            mProgressBar.setVisibility(View.GONE);
         });
     }
 
     @Override
     public void finish(int resultCode, @Nullable Intent intent) {
         setResult(resultCode, intent);
-        doAfterTimeout(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        });
+        doAfterTimeout(this::finish);
     }
 
     /**
-     * For certain actions (like finishing or hiding the progress dialog) we want to make sure
-     * that we have shown the progress state for at least MIN_SPINNER_MS to prevent flickering.
-     *
-     * This method performs some action after the window has passed, or immediately if we have
-     * already waited longer than that.
+     * For certain actions (like finishing or hiding the progress dialog) we want to make sure that we have shown the progress state for at least
+     * MIN_SPINNER_MS to prevent flickering.
+     * <p>
+     * This method performs some action after the window has passed, or immediately if we have already waited longer than that.
      */
     private void doAfterTimeout(Runnable runnable) {
         long currentTime = System.currentTimeMillis();

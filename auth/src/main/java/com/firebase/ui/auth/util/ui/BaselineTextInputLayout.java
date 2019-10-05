@@ -8,7 +8,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class BaselineTextInputLayout extends TextInputLayout {
     public BaselineTextInputLayout(Context context) {
         super(context);

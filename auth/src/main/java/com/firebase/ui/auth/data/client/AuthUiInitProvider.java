@@ -12,7 +12,6 @@ import com.firebase.ui.auth.util.Preconditions;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class AuthUiInitProvider extends ContentProvider {
     @Override
     public void attachInfo(Context context, ProviderInfo info) {

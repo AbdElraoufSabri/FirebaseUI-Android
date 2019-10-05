@@ -36,7 +36,6 @@ import androidx.annotation.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class PhoneNumberUtils {
     private static final int DEFAULT_COUNTRY_CODE_INT = 1;
     private static final String DEFAULT_COUNTRY_CODE = String.valueOf(DEFAULT_COUNTRY_CODE_INT);

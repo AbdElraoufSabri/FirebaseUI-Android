@@ -14,46 +14,25 @@
 
 package com.firebase.uidemo.auth;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.*;
 import com.firebase.ui.auth.util.ExtraConstants;
 import com.firebase.uidemo.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthProvider;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
-import com.google.firebase.auth.UserInfo;
+import com.google.android.gms.tasks.*;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static com.firebase.ui.auth.AuthUI.EMAIL_LINK_PROVIDER;
+import androidx.annotation.*;
+import androidx.appcompat.app.*;
+import butterknife.*;
 
 public class SignedInActivity extends AppCompatActivity {
     private static final String TAG = "SignedInActivity";
@@ -68,7 +47,7 @@ public class SignedInActivity extends AppCompatActivity {
     @BindView(R.id.user_is_new) TextView mIsNewUser;
 
     @NonNull
-    public static Intent createIntent(@NonNull Context context, @Nullable IdpResponse response) {
+    public static Intent createIntent(@NonNull Context context, @Nullable IdentityProviderResponse response) {
         return new Intent().setClass(context, SignedInActivity.class)
                 .putExtra(ExtraConstants.IDP_RESPONSE, response);
     }
@@ -84,7 +63,7 @@ public class SignedInActivity extends AppCompatActivity {
             return;
         }
 
-        IdpResponse response = getIntent().getParcelableExtra(ExtraConstants.IDP_RESPONSE);
+        IdentityProviderResponse response = getIntent().getParcelableExtra(ExtraConstants.IDP_RESPONSE);
 
         setContentView(R.layout.signed_in_layout);
         ButterKnife.bind(this);
@@ -140,7 +119,7 @@ public class SignedInActivity extends AppCompatActivity {
                 });
     }
 
-    private void populateProfile(@Nullable IdpResponse response) {
+    private void populateProfile(@Nullable IdentityProviderResponse response) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user.getPhotoUrl() != null) {
         }
@@ -160,9 +139,6 @@ public class SignedInActivity extends AppCompatActivity {
         }
 
         List<String> providers = new ArrayList<>();
-        if (user.getProviderData().isEmpty()) {
-            providers.add(getString(R.string.providers_anonymous));
-        } else {
             for (UserInfo info : user.getProviderData()) {
                 switch (info.getProviderId()) {
                     case GoogleAuthProvider.PROVIDER_ID:
@@ -177,26 +153,17 @@ public class SignedInActivity extends AppCompatActivity {
                     case EmailAuthProvider.PROVIDER_ID:
                         providers.add(getString(R.string.providers_email));
                         break;
-                    case PhoneAuthProvider.PROVIDER_ID:
-                        providers.add(getString(R.string.providers_phone));
-                        break;
-                    case EMAIL_LINK_PROVIDER:
-                        providers.add(getString(R.string.providers_email_link));
-                        break;
-                    case FirebaseAuthProvider.PROVIDER_ID:
-                        // Ignore this provider, it's not very meaningful
-                        break;
                     default:
                         throw new IllegalStateException(
                                 "Unknown provider: " + info.getProviderId());
                 }
             }
-        }
+
 
         mEnabledProviders.setText(getString(R.string.used_providers, providers));
     }
 
-    private void populateIdpToken(@Nullable IdpResponse response) {
+    private void populateIdpToken(@Nullable IdentityProviderResponse response) {
         String token = null;
         String secret = null;
         if (response != null) {

@@ -2,7 +2,7 @@ package com.firebase.ui.auth.viewmodel.email;
 
 import android.app.Application;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.*;
 import com.firebase.ui.auth.data.remote.ProfileMerger;
 import com.firebase.ui.auth.ui.email.WelcomeBackPasswordPrompt;
@@ -14,7 +14,7 @@ import com.google.firebase.auth.*;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class EmailProviderResponseHandler extends SignInViewModelBase {
     private static final String TAG = "EmailProviderResponseHandler";
 
@@ -22,16 +22,16 @@ public class EmailProviderResponseHandler extends SignInViewModelBase {
         super(application);
     }
 
-    public void startSignIn(@NonNull final IdpResponse response, @NonNull final String password) {
+    public void startSignIn(@NonNull final IdentityProviderResponse response, @NonNull final String password) {
         if (!response.isSuccessful()) {
-            setResult(Resource.<IdpResponse>forFailure(response.getError()));
+            setResult(Resource.<IdentityProviderResponse>forFailure(response.getError()));
             return;
         }
         if (!response.getProviderType().equals(EmailAuthProvider.PROVIDER_ID)) {
             throw new IllegalStateException(
                     "This handler can only be used with the email provider");
         }
-        setResult(Resource.<IdpResponse>forLoading());
+        setResult(Resource.<IdentityProviderResponse>forLoading());
 
         final AuthOperationManager authOperationManager = AuthOperationManager.getInstance();
         final String email = response.getEmail();
@@ -56,12 +56,12 @@ public class EmailProviderResponseHandler extends SignInViewModelBase {
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            setResult(Resource.<IdpResponse>forFailure(e));
+                                            setResult(Resource.<IdentityProviderResponse>forFailure(e));
                                         }
                                     });
 
                         } else {
-                            setResult(Resource.<IdpResponse>forFailure(e));
+                            setResult(Resource.<IdentityProviderResponse>forFailure(e));
                         }
                     }
                 });
@@ -82,17 +82,17 @@ public class EmailProviderResponseHandler extends SignInViewModelBase {
             }
 
             if (EmailAuthProvider.PROVIDER_ID.equalsIgnoreCase(provider)) {
-                setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
+                setResult(Resource.<IdentityProviderResponse>forFailure(new IntentRequiredException(
                         WelcomeBackPasswordPrompt.Companion.createIntent(
                                 getApplication(),
                                 getArguments(),
-                                new IdpResponse.Builder(new User.Builder(
+                                new IdentityProviderResponse.Builder(new User.Builder(
                                         EmailAuthProvider.PROVIDER_ID, mEmail).build()
                                 ).build()),
                         RequestCodes.WELCOME_BACK_EMAIL_FLOW
                 )));
             } else {
-                setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
+                setResult(Resource.<IdentityProviderResponse>forFailure(new IntentRequiredException(
                         WelcomeBackIdpPrompt.createIntent(
                                 getApplication(),
                                 getArguments(),

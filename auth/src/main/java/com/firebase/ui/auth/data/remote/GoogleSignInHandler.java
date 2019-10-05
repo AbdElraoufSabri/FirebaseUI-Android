@@ -8,7 +8,7 @@ import android.util.Log;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.IntentRequiredException;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
@@ -27,19 +27,19 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class GoogleSignInHandler extends ProviderSignInBase<GoogleSignInHandler.Params> {
     private static final String TAG = "GoogleSignInHandler";
 
-    private AuthUI.IdpConfig mConfig;
+    private AuthUI.IdentityProviderConfig mConfig;
     @Nullable private String mEmail;
 
     public GoogleSignInHandler(Application application) {
         super(application);
     }
 
-    private static IdpResponse createIdpResponse(GoogleSignInAccount account) {
-        return new IdpResponse.Builder(
+    private static IdentityProviderResponse createIdpResponse(GoogleSignInAccount account) {
+        return new IdentityProviderResponse.Builder(
                 new User.Builder(GoogleAuthProvider.PROVIDER_ID, account.getEmail())
                         .setName(account.getDisplayName())
                         .setPhotoUri(account.getPhotoUrl())
@@ -61,8 +61,8 @@ public class GoogleSignInHandler extends ProviderSignInBase<GoogleSignInHandler.
     }
 
     private void start() {
-        setResult(Resource.<IdpResponse>forLoading());
-        setResult(Resource.<IdpResponse>forFailure(new IntentRequiredException(
+        setResult(Resource.<IdentityProviderResponse>forLoading());
+        setResult(Resource.<IdentityProviderResponse>forFailure(new IntentRequiredException(
                 GoogleSignIn.getClient(getApplication(), getSignInOptions()).getSignInIntent(),
                 RequestCodes.GOOGLE_PROVIDER)));
     }
@@ -98,13 +98,13 @@ public class GoogleSignInHandler extends ProviderSignInBase<GoogleSignInHandler.
                 // Google remembers the account so the picker doesn't appear twice for the user.
                 start();
             } else if (e.getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-                setResult(Resource.<IdpResponse>forFailure(new UserCancellationException()));
+                setResult(Resource.<IdentityProviderResponse>forFailure(new UserCancellationException()));
             } else {
                 if (e.getStatusCode() == CommonStatusCodes.DEVELOPER_ERROR) {
                     Log.w(TAG, "Developer error: this application is misconfigured. " +
                             "Check your SHA1 and package name in the Firebase console.");
                 }
-                setResult(Resource.<IdpResponse>forFailure(new FirebaseUiException(
+                setResult(Resource.<IdentityProviderResponse>forFailure(new FirebaseUiException(
                         ErrorCodes.PROVIDER_ERROR,
                         "Code: " + e.getStatusCode() + ", message: " + e.getMessage())));
             }
@@ -112,14 +112,14 @@ public class GoogleSignInHandler extends ProviderSignInBase<GoogleSignInHandler.
     }
 
     public static final class Params {
-        private final AuthUI.IdpConfig config;
+        private final AuthUI.IdentityProviderConfig config;
         @Nullable private final String email;
 
-        public Params(AuthUI.IdpConfig config) {
+        public Params(AuthUI.IdentityProviderConfig config) {
             this(config, null);
         }
 
-        public Params(AuthUI.IdpConfig config, @Nullable String email) {
+        public Params(AuthUI.IdentityProviderConfig config, @Nullable String email) {
             this.config = config;
             this.email = email;
         }

@@ -8,7 +8,6 @@ import com.google.android.gms.tasks.Task;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class RecoverPasswordHandler extends AuthViewModelBase<String> {
     public RecoverPasswordHandler(Application application) {
         super(application);

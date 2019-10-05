@@ -3,7 +3,7 @@ package com.firebase.ui.auth.viewmodel;
 import androidx.lifecycle.Observer;
 
 import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.User;
@@ -48,13 +48,13 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link EmailSignInHandler}.
  */
 @RunWith(RobolectricTestRunner.class)
-public class EmailSignInHandlerTest {
+public class EmailMainSignInHandlerTest {
 
     @Mock FirebaseAuth mMockAuth;
     @Mock FirebaseAuth mScratchMockAuth;
     @Mock FirebaseUser mUser;
     @Mock CredentialsClient mMockCredentials;
-    @Mock Observer<Resource<IdpResponse>> mResponseObserver;
+    @Mock Observer<Resource<IdentityProviderResponse>> mResponseObserver;
 
     private EmailSignInHandler mHandler;
 
@@ -78,7 +78,7 @@ public class EmailSignInHandlerTest {
         User user = new User.Builder(FacebookAuthProvider.PROVIDER_ID, TestConstants.EMAIL)
                 .build();
 
-        IdpResponse response = new IdpResponse.Builder(user)
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(user)
                 .setToken(TestConstants.TOKEN)
                 .setSecret(TestConstants.SECRET)
                 .build();
@@ -104,7 +104,7 @@ public class EmailSignInHandlerTest {
         mHandler.startSignIn(TestConstants.EMAIL, TestConstants.PASSWORD, response, credential);
 
         // Verify that we get a loading event
-        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
         // Verify that sign in is called with the right arguments
         verify(mMockAuth).signInWithEmailAndPassword(
@@ -114,7 +114,7 @@ public class EmailSignInHandlerTest {
         verify(FakeAuthResult.INSTANCE.getUser()).linkWithCredential(credential);
 
         // Verify that we get a success event
-        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test
@@ -129,14 +129,14 @@ public class EmailSignInHandlerTest {
         mHandler.startSignIn(TestConstants.EMAIL, TestConstants.PASSWORD, null, null);
 
         // Verify that we get a loading event
-        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
         // Verify that sign in is called with the right arguments
         verify(mMockAuth).signInWithEmailAndPassword(
                 TestConstants.EMAIL, TestConstants.PASSWORD);
 
         // Verify that we get a failure event
-        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isFailure()));
+        verify(mResponseObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isFailure()));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class EmailSignInHandlerTest {
         // Fake user with password provider
         User user = new User.Builder(EmailAuthProvider.PROVIDER_ID, TestConstants.EMAIL)
                 .build();
-        IdpResponse response = new IdpResponse.Builder(user)
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(user)
                 .build();
 
         // Need to control FirebaseAuth's return values
@@ -186,7 +186,7 @@ public class EmailSignInHandlerTest {
         User user = new User.Builder(FacebookAuthProvider.PROVIDER_ID, TestConstants.EMAIL)
                 .build();
 
-        IdpResponse response = new IdpResponse.Builder(user)
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(user)
                 .setToken(TestConstants.TOKEN)
                 .setSecret(TestConstants.SECRET)
                 .build();
@@ -239,9 +239,9 @@ public class EmailSignInHandlerTest {
         InOrder inOrder = inOrder(mResponseObserver);
 
         inOrder.verify(mResponseObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResponseObserver).onChanged(resolveCaptor.capture());
 

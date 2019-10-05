@@ -21,7 +21,6 @@ import androidx.core.widget.TextViewCompat;
  * compatibility attribute for compound drawables. Thus, we must load compound drawables at runtime
  * using AppCompat and inject them into the button to support pre-L devices.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class SupportVectorDrawablesButton extends AppCompatButton {
     public SupportVectorDrawablesButton(Context context) {
         super(context);

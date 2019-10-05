@@ -17,7 +17,7 @@ import android.content.Intent;
 import android.os.*;
 import android.text.TextUtils;
 
-import com.firebase.ui.auth.AuthUI.IdpConfig;
+import com.firebase.ui.auth.AuthUI.IdentityProviderConfig;
 import com.firebase.ui.auth.util.*;
 
 import java.util.*;
@@ -28,29 +28,24 @@ import androidx.annotation.*;
  * Encapsulates the core parameters and data captured during the authentication flow, in a
  * serializable manner, in order to pass data between activities.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class FlowParameters implements Parcelable {
 
     public static final Creator<FlowParameters> CREATOR = new Creator<FlowParameters>() {
         @Override
         public FlowParameters createFromParcel(Parcel in) {
             String appName = in.readString();
-            List<IdpConfig> providerInfo = in.createTypedArrayList(IdpConfig.CREATOR);
+            List<IdentityProviderConfig> providerInfo = in.createTypedArrayList(IdentityProviderConfig.CREATOR);
             String termsOfServiceUrl = in.readString();
             String privacyPolicyUrl = in.readString();
             boolean enableCredentials = in.readInt() != 0;
-            boolean enableHints = in.readInt() != 0;
-            boolean alwaysShowProviderChoice = in.readInt() != 0;
 
             return new FlowParameters(
                     appName,
                     providerInfo,
                     termsOfServiceUrl,
                     privacyPolicyUrl,
-                    enableCredentials,
-                    enableHints,
-                    alwaysShowProviderChoice
-            );
+                    enableCredentials);
         }
 
         @Override
@@ -63,7 +58,7 @@ public class FlowParameters implements Parcelable {
     public final String appName;
 
     @NonNull
-    public final List<IdpConfig> providers;
+    public final List<IdentityProviderConfig> providers;
 
     @Nullable
     public final String termsOfServiceUrl;
@@ -72,17 +67,13 @@ public class FlowParameters implements Parcelable {
     public final String privacyPolicyUrl;
 
     public final boolean enableCredentials;
-    public final boolean enableHints;
-    public final boolean alwaysShowProviderChoice;
 
     public FlowParameters(
             @NonNull String appName,
-            @NonNull List<IdpConfig> providers,
+            @NonNull List<IdentityProviderConfig> providers,
             @Nullable String termsOfServiceUrl,
             @Nullable String privacyPolicyUrl,
-            boolean enableCredentials,
-            boolean enableHints,
-            boolean alwaysShowProviderChoice
+            boolean enableCredentials
     ) {
         this.appName = Preconditions.checkNotNull(appName, "appName cannot be null");
         this.providers = Collections.unmodifiableList(
@@ -90,8 +81,6 @@ public class FlowParameters implements Parcelable {
         this.termsOfServiceUrl = termsOfServiceUrl;
         this.privacyPolicyUrl = privacyPolicyUrl;
         this.enableCredentials = enableCredentials;
-        this.enableHints = enableHints;
-        this.alwaysShowProviderChoice = alwaysShowProviderChoice;
     }
 
     /**
@@ -108,17 +97,11 @@ public class FlowParameters implements Parcelable {
         dest.writeString(termsOfServiceUrl);
         dest.writeString(privacyPolicyUrl);
         dest.writeInt(enableCredentials ? 1 : 0);
-        dest.writeInt(enableHints ? 1 : 0);
-        dest.writeInt(alwaysShowProviderChoice ? 1 : 0);
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    public boolean isSingleProviderFlow() {
-        return providers.size() == 1;
     }
 
     public boolean isTermsOfServiceUrlProvided() {
@@ -127,9 +110,5 @@ public class FlowParameters implements Parcelable {
 
     public boolean isPrivacyPolicyUrlProvided() {
         return !TextUtils.isEmpty(privacyPolicyUrl);
-    }
-
-    public boolean shouldShowProviderChoice() {
-        return !isSingleProviderFlow() || alwaysShowProviderChoice;
     }
 }

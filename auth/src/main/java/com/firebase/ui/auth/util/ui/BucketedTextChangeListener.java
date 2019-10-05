@@ -38,10 +38,10 @@ import androidx.annotation.RestrictTo;
  * 76417-
  * 764176
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public final class BucketedTextChangeListener implements TextWatcher {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    
     public interface ContentChangeCallback {
         /**
          * Idempotent function invoked by the listener when the edit text changes and is of expected

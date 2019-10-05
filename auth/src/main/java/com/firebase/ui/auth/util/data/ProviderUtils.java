@@ -19,8 +19,7 @@ import android.text.TextUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.R;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.google.android.gms.auth.api.credentials.IdentityProviders;
 import com.google.android.gms.tasks.Continuation;
@@ -39,14 +38,13 @@ import java.util.List;
 
 import androidx.annotation.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class ProviderUtils {
     private ProviderUtils() {
         throw new AssertionError("No instance for you!");
     }
 
     @Nullable
-    public static AuthCredential getAuthCredential(IdpResponse response) {
+    public static AuthCredential getAuthCredential(IdentityProviderResponse response) {
         switch (response.getProviderType()) {
             case GoogleAuthProvider.PROVIDER_ID:
                 return GoogleAuthProvider.getCredential(response.getIdpToken(), null);
@@ -61,7 +59,7 @@ public final class ProviderUtils {
     }
 
     @Nullable
-    public static String idpResponseToAccountType(@Nullable IdpResponse response) {
+    public static String idpResponseToAccountType(@Nullable IdentityProviderResponse response) {
         if (response == null) {
             return null;
         }
@@ -120,24 +118,10 @@ public final class ProviderUtils {
         }
     }
 
-    public static String providerIdToProviderName(@NonNull String providerId) {
-        switch (providerId) {
-            case GoogleAuthProvider.PROVIDER_ID:
-                return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_google);
-            case FacebookAuthProvider.PROVIDER_ID:
-                return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_facebook);
-            case TwitterAuthProvider.PROVIDER_ID:
-                return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_twitter);
-            case EmailAuthProvider.PROVIDER_ID:
-                return AuthUI.getApplicationContext().getString(R.string.fui_idp_name_email);
-            default:
-                return null;
-        }
-    }
 
     @Nullable
-    public static AuthUI.IdpConfig getConfigFromIdps(List<AuthUI.IdpConfig> idps, String id) {
-        for (AuthUI.IdpConfig idp : idps) {
+    public static AuthUI.IdentityProviderConfig getConfigFromIdps(List<AuthUI.IdentityProviderConfig> idps, String id) {
+        for (AuthUI.IdentityProviderConfig idp : idps) {
             if (idp.getProviderId().equals(id)) {
                 return idp;
             }
@@ -146,9 +130,9 @@ public final class ProviderUtils {
     }
 
     @NonNull
-    public static AuthUI.IdpConfig getConfigFromIdpsOrThrow(List<AuthUI.IdpConfig> idps,
-                                                            String id) {
-        AuthUI.IdpConfig config = getConfigFromIdps(idps, id);
+    public static AuthUI.IdentityProviderConfig getConfigFromIdpsOrThrow(List<AuthUI.IdentityProviderConfig> idps,
+                                                                         String id) {
+        AuthUI.IdentityProviderConfig config = getConfigFromIdps(idps, id);
         if (config == null) {
             throw new IllegalStateException("Provider " + id + " not found.");
         }
@@ -173,7 +157,7 @@ public final class ProviderUtils {
 
                         List<String> allowedProviders = new ArrayList<>(params.providers.size());
 
-                        for (AuthUI.IdpConfig provider : params.providers) {
+                        for (AuthUI.IdentityProviderConfig provider : params.providers) {
                             allowedProviders.add(provider.getProviderId());
                         }
 

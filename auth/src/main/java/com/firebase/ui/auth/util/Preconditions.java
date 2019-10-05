@@ -69,7 +69,6 @@ public final class Preconditions {
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static void checkUnset(@NonNull Bundle b,
                                   @Nullable String message,
                                   @NonNull String... keys) {
@@ -78,7 +77,6 @@ public final class Preconditions {
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static void checkConfigured(@NonNull Context context,
                                        @Nullable String message,
                                        @StringRes int... ids) {

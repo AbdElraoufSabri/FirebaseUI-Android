@@ -9,7 +9,7 @@ import androidx.annotation.*;
 
 import static com.firebase.ui.auth.util.data.EmailLinkParser.LinkParameters.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class ContinueUrlBuilder {
 
     private StringBuilder mContinueUrl;

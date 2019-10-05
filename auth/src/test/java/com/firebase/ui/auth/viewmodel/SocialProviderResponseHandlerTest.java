@@ -3,9 +3,9 @@ package com.firebase.ui.auth.viewmodel;
 import android.app.Activity;
 import androidx.lifecycle.Observer;
 
-import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.*;
 import com.firebase.ui.auth.FirebaseAuthAnonymousUpgradeException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.IntentRequiredException;
 import com.firebase.ui.auth.data.model.Resource;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 public class SocialProviderResponseHandlerTest {
     @Mock FirebaseAuth mMockAuth;
     @Mock FirebaseUser mUser;
-    @Mock Observer<Resource<IdpResponse>> mResultObserver;
+    @Mock Observer<Resource<IdentityProviderResponse>> mResultObserver;
 
     private SocialProviderResponseHandler mHandler;
 
@@ -87,7 +87,7 @@ public class SocialProviderResponseHandlerTest {
         when(mMockAuth.signInWithCredential(any(AuthCredential.class)))
                 .thenReturn(AutoCompleteTask.forSuccess(FakeAuthResult.INSTANCE));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -98,16 +98,16 @@ public class SocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResultObserver);
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testSignInNonIdp_failure() {
         mHandler.getOperation().observeForever(mResultObserver);
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 EmailAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .build();
 
@@ -118,11 +118,11 @@ public class SocialProviderResponseHandlerTest {
     public void testSignInResponse_failure() {
         mHandler.getOperation().observeForever(mResultObserver);
 
-        IdpResponse response = IdpResponse.from(new Exception("Failure"));
+        IdentityProviderResponse response = IdentityProviderResponse.from(new Exception("Failure"));
 
         mHandler.startSignIn(response);
 
-        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdpResponse>isFailure()));
+        verify(mResultObserver).onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isFailure()));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class SocialProviderResponseHandlerTest {
                         new FakeSignInMethodQueryResult(Collections.singletonList(
                                 FacebookAuthProvider.FACEBOOK_SIGN_IN_METHOD))));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -149,9 +149,9 @@ public class SocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResultObserver);
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResultObserver).onChanged(resolveCaptor.capture());
 
@@ -162,7 +162,7 @@ public class SocialProviderResponseHandlerTest {
 
         // Make sure we get success
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
 
@@ -174,7 +174,7 @@ public class SocialProviderResponseHandlerTest {
         when(mMockAuth.getCurrentUser().linkWithCredential(any(AuthCredential.class)))
                 .thenReturn(AutoCompleteTask.forSuccess(FakeAuthResult.INSTANCE));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -185,9 +185,9 @@ public class SocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResultObserver);
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isSuccess()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isSuccess()));
     }
 
     @Test
@@ -207,7 +207,7 @@ public class SocialProviderResponseHandlerTest {
                                 FacebookAuthProvider.FACEBOOK_SIGN_IN_METHOD))));
 
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -218,9 +218,9 @@ public class SocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResultObserver);
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResultObserver).onChanged(resolveCaptor.capture());
 
@@ -246,7 +246,7 @@ public class SocialProviderResponseHandlerTest {
                         new FakeSignInMethodQueryResult(Collections.singletonList(
                                 FacebookAuthProvider.FACEBOOK_SIGN_IN_METHOD))));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 GoogleAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .build();
@@ -257,9 +257,9 @@ public class SocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResultObserver);
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResultObserver).onChanged(resolveCaptor.capture());
 
@@ -269,7 +269,7 @@ public class SocialProviderResponseHandlerTest {
         assertThat(e.getIntent().getComponent().getClassName())
                 .isEqualTo(WelcomeBackIdpPrompt.class.toString().split(" ")[1]);
 
-        assertThat(IdpResponse.fromResultIntent(e.getIntent())).isEqualTo(response);
+        assertThat(IdentityProviderResponse.fromResultIntent(e.getIntent())).isEqualTo(response);
 
     }
 
@@ -289,7 +289,7 @@ public class SocialProviderResponseHandlerTest {
                         new FakeSignInMethodQueryResult(Collections.singletonList(
                                 EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD))));
 
-        IdpResponse response = new IdpResponse.Builder(new User.Builder(
+        IdentityProviderResponse response = new IdentityProviderResponse.Builder(new User.Builder(
                 FacebookAuthProvider.PROVIDER_ID, TestConstants.EMAIL).build())
                 .setToken(TestConstants.TOKEN)
                 .setSecret(TestConstants.SECRET)
@@ -301,9 +301,9 @@ public class SocialProviderResponseHandlerTest {
 
         InOrder inOrder = inOrder(mResultObserver);
         inOrder.verify(mResultObserver)
-                .onChanged(argThat(ResourceMatchers.<IdpResponse>isLoading()));
+                .onChanged(argThat(ResourceMatchers.<IdentityProviderResponse>isLoading()));
 
-        ArgumentCaptor<Resource<IdpResponse>> resolveCaptor =
+        ArgumentCaptor<Resource<IdentityProviderResponse>> resolveCaptor =
                 ArgumentCaptor.forClass(Resource.class);
         inOrder.verify(mResultObserver).onChanged(resolveCaptor.capture());
 
@@ -313,7 +313,7 @@ public class SocialProviderResponseHandlerTest {
         assertThat(e.getIntent().getComponent().getClassName())
                 .isEqualTo(WelcomeBackPasswordPrompt.class.toString().split(" ")[1]);
 
-        assertThat(IdpResponse.fromResultIntent(e.getIntent())).isEqualTo(response);
+        assertThat(IdentityProviderResponse.fromResultIntent(e.getIntent())).isEqualTo(response);
     }
 
     private void setupAnonymousUpgrade() {

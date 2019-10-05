@@ -2,7 +2,7 @@ package com.firebase.ui.auth.viewmodel;
 
 import androidx.lifecycle.Observer;
 
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.Resource;
 import com.firebase.ui.auth.data.model.State;
@@ -141,16 +141,16 @@ public class EmailLinkSendEmailHandlerTest {
         when(mMockAuth.sendSignInLinkToEmail(any(String.class), any(ActionCodeSettings.class)))
                 .thenReturn(AutoCompleteTask.<Void>forFailure(new Exception()));
 
-        IdpResponse idpResponseForLinking = buildFacebookIdpResponseForLinking();
+        IdentityProviderResponse identityProviderResponseForLinking = buildFacebookIdpResponseForLinking();
         mHandler.sendSignInLinkToEmail(TestConstants.EMAIL, actionCodeSettings,
-                idpResponseForLinking, forceSameDevice);
+                identityProviderResponseForLinking, forceSameDevice);
 
         ArgumentCaptor<ActionCodeSettings> acsCaptor =
                 ArgumentCaptor.forClass(ActionCodeSettings.class);
 
         verify(mMockAuth).sendSignInLinkToEmail(eq(TestConstants.EMAIL), acsCaptor.capture());
 
-        validateSessionIdAddedToContinueUrl(acsCaptor.getValue(), idpResponseForLinking
+        validateSessionIdAddedToContinueUrl(acsCaptor.getValue(), identityProviderResponseForLinking
                 .getProviderType(), forceSameDevice);
 
         ArgumentCaptor<Resource<String>> captor = ArgumentCaptor.forClass(Resource.class);
@@ -172,10 +172,10 @@ public class EmailLinkSendEmailHandlerTest {
         assertThat(parser.getProviderId()).isEqualTo(providerId);
     }
 
-    private IdpResponse buildFacebookIdpResponseForLinking() {
+    private IdentityProviderResponse buildFacebookIdpResponseForLinking() {
         User user = new User.Builder(FacebookAuthProvider.PROVIDER_ID, TestConstants.EMAIL)
                 .build();
-        return new IdpResponse.Builder(user)
+        return new IdentityProviderResponse.Builder(user)
                 .setToken(TestConstants.TOKEN)
                 .setSecret(TestConstants.SECRET)
                 .build();

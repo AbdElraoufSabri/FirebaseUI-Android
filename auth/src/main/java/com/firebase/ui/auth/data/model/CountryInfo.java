@@ -26,7 +26,7 @@ import java.util.Locale;
 
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public final class CountryInfo implements Comparable<CountryInfo>, Parcelable {
 
     public static final Parcelable.Creator<CountryInfo> CREATOR = new Parcelable.Creator<CountryInfo>() {

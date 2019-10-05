@@ -2,10 +2,10 @@ package com.firebase.ui.auth.ui.email
 
 interface AuthenticationButtonsListener {
 
-    fun signUpClicked(email : String, password: String)
-
+    fun forgotPasswordClicked()
     fun switchToSignIn()
 
     fun switchToSignUp()
+
 
 }

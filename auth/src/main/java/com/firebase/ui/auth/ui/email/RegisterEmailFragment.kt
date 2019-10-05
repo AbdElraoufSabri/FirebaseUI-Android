@@ -11,8 +11,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.auth.IdentityProviderResponse
 import com.firebase.ui.auth.R
 import com.firebase.ui.auth.data.model.User
 import com.firebase.ui.auth.ui.FragmentBase
@@ -33,13 +32,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 
 import androidx.annotation.*
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 
 /**
  * Fragment to display an email/name/password sign up form for new users.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class RegisterEmailFragment : FragmentBase(), View.OnClickListener, View.OnFocusChangeListener, ImeHelper.DonePressedListener {
 
     private lateinit var mHandler: EmailProviderResponseHandler
@@ -69,9 +66,9 @@ class RegisterEmailFragment : FragmentBase(), View.OnClickListener, View.OnFocus
 
         mHandler = ViewModelProviders.of(this).get(EmailProviderResponseHandler::class.java)
         mHandler.init(flowParams)
-        mHandler.operation.observe(this, object : ResourceObserver<IdpResponse>(
+        mHandler.operation.observe(this, object : ResourceObserver<IdentityProviderResponse>(
                 this, R.string.fui_progress_dialog_signing_up) {
-            override fun onSuccess(response: IdpResponse) {
+            override fun onSuccess(response: IdentityProviderResponse) {
                 startSaveCredentials(
                         mHandler.currentUser,
                         response,
@@ -231,7 +228,7 @@ class RegisterEmailFragment : FragmentBase(), View.OnClickListener, View.OnFocus
         val passwordValid = mPasswordFieldValidator.validate(password)
         val nameValid = mNameValidator.validate(name)
         if (emailValid && passwordValid && nameValid) {
-            mHandler.startSignIn(IdpResponse.Builder(
+            mHandler.startSignIn(IdentityProviderResponse.Builder(
                     User.Builder(EmailAuthProvider.PROVIDER_ID, email)
                             .setName(name)
                             .setPhotoUri(mUser.photoUri)

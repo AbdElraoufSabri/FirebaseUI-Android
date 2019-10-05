@@ -23,10 +23,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.FirebaseUiException;
-import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.*;
+import com.firebase.ui.auth.IdentityProviderResponse;
 import com.firebase.ui.auth.R;
 import com.firebase.ui.auth.data.model.FlowParameters;
 import com.firebase.ui.auth.data.model.User;
@@ -45,7 +43,6 @@ import com.google.firebase.auth.*;
 import androidx.annotation.*;
 import androidx.lifecycle.*;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class WelcomeBackIdpPrompt extends AppCompatBase {
     private ProviderSignInBase<?> mProvider;
 
@@ -61,7 +58,7 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
             Context context,
             FlowParameters flowParams,
             User existingUser,
-            @Nullable IdpResponse requestedUserResponse) {
+            @Nullable IdentityProviderResponse requestedUserResponse) {
 
         return createBaseIntent(context, WelcomeBackIdpPrompt.class, flowParams)
                 .putExtra(ExtraConstants.IDP_RESPONSE, requestedUserResponse)
@@ -78,7 +75,7 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
 
         User user = User.getUser(getIntent());
 
-        IdpResponse requestedUserResponse = IdpResponse.fromResultIntent(getIntent());
+        IdentityProviderResponse requestedUserResponse = IdentityProviderResponse.fromResultIntent(getIntent());
         ViewModelProvider supplier = ViewModelProviders.of(this);
 
         final LinkingSocialProviderResponseHandler handler =
@@ -91,10 +88,10 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
         }
 
         String providerId = user.getProviderId();
-        AuthUI.IdpConfig config =
+        AuthUI.IdentityProviderConfig config =
                 ProviderUtils.getConfigFromIdps(getFlowParams().providers, providerId);
         if (config == null) {
-            finish(RESULT_CANCELED, IdpResponse.getErrorIntent(new FirebaseUiException(
+            finish(RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(new FirebaseUiException(
                     ErrorCodes.DEVELOPER_ERROR,
                     "Firebase login unsuccessful."
                             + " Account linking failed due to provider not enabled by application: "
@@ -129,15 +126,15 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
                 throw new IllegalStateException("Invalid provider id: " + providerId);
         }
 
-        mProvider.getOperation().observe(this, new ResourceObserver<IdpResponse>(this) {
+        mProvider.getOperation().observe(this, new ResourceObserver<IdentityProviderResponse>(this) {
             @Override
-            protected void onSuccess(@NonNull IdpResponse response) {
+            protected void onSuccess(@NonNull IdentityProviderResponse response) {
                 handler.startSignIn(response);
             }
 
             @Override
             protected void onFailure(@NonNull Exception e) {
-                handler.startSignIn(IdpResponse.from(e));
+                handler.startSignIn(IdentityProviderResponse.from(e));
             }
         });
 
@@ -153,15 +150,15 @@ public class WelcomeBackIdpPrompt extends AppCompatBase {
             }
         });
 
-        handler.getOperation().observe(this, new ResourceObserver<IdpResponse>(this) {
+        handler.getOperation().observe(this, new ResourceObserver<IdentityProviderResponse>(this) {
             @Override
-            protected void onSuccess(@NonNull IdpResponse response) {
+            protected void onSuccess(@NonNull IdentityProviderResponse response) {
                 finish(RESULT_OK, response.toIntent());
             }
 
             @Override
             protected void onFailure(@NonNull Exception e) {
-                    finish(RESULT_CANCELED, IdpResponse.getErrorIntent(e));
+                    finish(RESULT_CANCELED, IdentityProviderResponse.getErrorIntent(e));
             }
         });
 

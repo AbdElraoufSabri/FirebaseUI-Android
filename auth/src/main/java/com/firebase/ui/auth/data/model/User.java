@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public class User implements Parcelable {
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
         @Override
@@ -129,7 +129,7 @@ public class User implements Parcelable {
         dest.writeParcelable(mPhotoUri, flags);
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
     public static class Builder {
         private String mProviderId;
         private String mEmail;

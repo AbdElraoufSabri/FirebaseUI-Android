@@ -7,7 +7,7 @@ import androidx.annotation.RestrictTo;
 
 import com.google.gson.annotations.SerializedName;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
 public final class GitHubProfile {
     @SerializedName("email") private String mEmail;
     @SerializedName("name") private String mName;
